@@ -80,16 +80,17 @@ class RegistrationRouteInitializer(RouteInitializer):
                     password=data["password"]
                 )
 
-                db.session.add(user)
-                db.session.flush()
+                with db.session.begin():
+                    db.session.add(user)
+                    db.session.flush()
 
-                # role = Role.query.filter_by(name=role_name).first()
-                role = db.session.query(Role).filter_by(name=role_name) \
-                         .with_for_update().one()
-                has_role = HasRole(user_id=user.id, role_id=role.id)
+                    # role = Role.query.filter_by(name=role_name).first()
+                    role = db.session.query(Role).filter_by(name=role_name) \
+                             .with_for_update().one()
+                    has_role = HasRole(user_id=user.id, role_id=role.id)
 
-                db.session.add(has_role)
-                db.session.commit()
+                    db.session.add(has_role)
+                    db.session.commit()
 
             except ParsingError as e:
                 return jsonify({

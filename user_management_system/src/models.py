@@ -81,6 +81,12 @@ class User(DATABASE.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def delete(self):
+        # remove all has_role objects that have user.id as foreign key
+        DATABASE.session.query(HasRole).with_for_update() \
+                .filter(HasRole.user_id == self.id).delete()
+        DATABASE.session.delete(self)
+
 
 
 class Role(DATABASE.Model):

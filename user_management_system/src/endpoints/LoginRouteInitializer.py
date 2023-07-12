@@ -1,10 +1,9 @@
 from flask import request as flask_request
 from flask import jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token
 
 from ..models import User
 from .RouteInitializer import RouteInitializer
-from .utils import is_valid_email_format
+from .utils import is_valid_email_format, generate_jwts
 
 
 class LoginRouteInitializer(RouteInitializer):
@@ -34,7 +33,7 @@ class LoginRouteInitializer(RouteInitializer):
             class ValidationError(Exception):
                 pass
 
-            def parse_registration_form():
+            def parse_login_form():
                 data = dict({
                     "email": flask_request.form.get("email", ''),
                     "password": flask_request.form.get("password", ''),
@@ -50,7 +49,7 @@ class LoginRouteInitializer(RouteInitializer):
                 # TODO: check for too long fields, > 256 chars
                 return data
 
-            def validate_registration_form(data):
+            def validate_login_form(data):
                 def validate_email():
                     if len(data["email"]) > 256 \
                     or not is_valid_email_format(data["email"]):
@@ -63,29 +62,9 @@ class LoginRouteInitializer(RouteInitializer):
                 validate_email()
                 # validate_password()
 
-            def generate_jwts(user):
-                claims = {
-                    # 'email': user.email,  # identity
-                    'forename': user.forename,
-                    'surname': user.surname,
-                    # "roles": [ role.name for role in user.roles ]
-                }
-
-                access_token = create_access_token(
-                    identity=user.email,
-                    additional_claims=claims
-                )
-                
-                refresh_token = create_refresh_token(
-                    identity=user.email,
-                    additional_claims=claims
-                )
-
-                return access_token, refresh_token, claims
-
             try:
-                data = parse_registration_form()
-                validate_registration_form(data)
+                data = parse_login_form()
+                validate_login_form(data)
 
                 # authenticate the user
                 user = User.query.filter_by(
