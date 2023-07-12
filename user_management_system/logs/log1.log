@@ -1,0 +1,163 @@
+Failed to register customer
+Traceback (most recent call last):
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\src\endpoints\RegistrationRouteInitializer.py", line 75, in register_user_view
+    user = User(
+           ^^^^^
+TypeError: __init__() missing 1 required positional argument: 'type'
+Failed to register customer
+Traceback (most recent call last):
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\src\endpoints\RegistrationRouteInitializer.py", line 82, in register_user_view
+    role = Role.query.filter(name=role_name).first()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Query.filter() got an unexpected keyword argument 'name'
+Failed to commit user registration: <User(id: None): Jim Morrison; pwd: heaven12, email: go2d@27.com>, role: <Role(id: 2): customer>
+Traceback (most recent call last):
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1965, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 921, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 558, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 822, in _read_query_result
+    result.read()
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 1200, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 772, in _read_packet
+    packet.raise_for_error()
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1048, "Column 'user_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\src\endpoints\RegistrationRouteInitializer.py", line 89, in register_user_view
+    db.session.commit()
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 552, in commit
+    return self._proxied.commit()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1920, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1236, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1211, in _prepare_impl
+    self.session.flush()
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4163, in flush
+    self._flush(objects)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4298, in _flush
+    with util.safe_reraise():
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 147, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4259, in _flush
+    flush_context.execute()
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1226, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1412, in execute
+    return meth(
+           ^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 483, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1635, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1844, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1984, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2339, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1965, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 921, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 558, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 822, in _read_query_result
+    result.read()
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 1200, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\connections.py", line 772, in _read_packet
+    packet.raise_for_error()
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\pymysql\err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1048, "Column 'user_id' cannot be null")
+[SQL: INSERT INTO has_role (user_id, role_id) VALUES (%(user_id)s, %(role_id)s)]
+[parameters: {'user_id': None, 'role_id': 2}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Failed to register customer
+Traceback (most recent call last):
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\src\endpoints\RegistrationRouteInitializer.py", line 86, in register_user_view
+    role = Role.query.filter_by(name=role_name).first()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2747, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2846, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2246, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2131, in _execute_internal
+    conn = self._connection_for_bind(bind)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1993, in _connection_for_bind
+    TransactionalContext._trans_ctx_check(self)
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\sqlalchemy\engine\util.py", line 110, in _trans_ctx_check
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: Can't operate on closed transaction inside context manager.  Please complete the context manager before emitting further commands.
+Failed to login
+Traceback (most recent call last):
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\src\endpoints\LoginRouteInitializer.py", line 99, in login_user_view
+    access_token, refresh_token, claims = generate_jwts()
+                                          ^^^^^^^^^^^^^^^
+TypeError: LoginRouteInitializer.__call__.<locals>.login_user_view.<locals>.generate_jwts() missing 1 required positional argument: 'user'
+Failed to login
+Traceback (most recent call last):
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\src\endpoints\LoginRouteInitializer.py", line 99, in login_user_view
+    access_token, refresh_token, claims = generate_jwts(user)
+                                          ^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\src\endpoints\LoginRouteInitializer.py", line 74, in generate_jwts
+    access_token = create_access_token(
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\flask_jwt_extended\utils.py", line 174, in create_access_token
+    jwt_manager = get_jwt_manager()
+                  ^^^^^^^^^^^^^^^^^
+  File "D:\Downloads D\Sale\IEP\Project\store_management_system\user_management_system\venv\Lib\site-packages\flask_jwt_extended\internal_utils.py", line 31, in get_jwt_manager
+    raise RuntimeError(
+RuntimeError: You must initialize a JWTManager with this flask application before using this method
