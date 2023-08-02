@@ -1,7 +1,7 @@
 from functools import wraps
 from flask_jwt_extended import get_jwt, jwt_required, \
                                verify_jwt_in_request
-from flask_jwt_extended.exceptions import NoAuthorizationError
+from flask_jwt_extended.exceptions import NoAuthorizationError, RevokedTokenError
 from flask import jsonify
 
 from typing import Callable, Any
@@ -27,6 +27,12 @@ def login_required(
                     # handle errors with default messages
                     raise e
 
+            except RevokedTokenError as e:  # token was blocklisted
+                if reraise: raise e;
+                return jsonify({
+                    'message': 'Unknown user.'
+                }), err_code or 400
+
             except NoAuthorizationError as e:
                 if reraise: raise e;
                 return jsonify({
@@ -36,7 +42,7 @@ def login_required(
             except Exception as e:
                 if reraise: raise e;
                 return jsonify({
-                    'message': f'Unexpected login error: {e}'
+                    'message': f'Unexpected login error: {e} + {type(e)} + {e.__class__.__name__}'
                 }), err_code or 400
 
             return function(*args, **kwargs)

@@ -13,9 +13,10 @@ BASE = "http://127.0.0.1:5000"
 # }
 
 def main():
-    # send_register_customer()
+    send_register_customer()
     send_register_courier()
     access_token = send_login_courier()
+    access_token = send_login_courier_again(access_token)
     send_delete_courier_no_header(access_token)
     send_delete_courier(access_token)
 
@@ -24,7 +25,7 @@ def send_register_customer():
     payload = {
         "forename": "Jim",
         "surname": "Morrison",
-        "email": "go2d@27.com",
+        "email": "god@27.com",
         "password": "heaven12"
     }
 
@@ -73,6 +74,32 @@ def send_login_courier():
     response = requests.post(
         url=BASE + '/login',
         data=payload
+    )
+
+    print(response)
+    print(response.text)
+    # print(response.json())
+
+    return response.json()["accessToken"]
+
+
+def send_login_courier_again(access_token):
+    payload = {
+        # "forename": "Jim",
+        # "surname": "Morrison",
+        "email": "go2d@27.com",
+        "password": "heaven12"
+    }
+
+    # headers = {'accept': 'application/json'}
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {access_token}'
+    }
+    response = requests.post(
+        url=BASE + '/login',
+        data=payload,
+        headers=headers
     )
 
     print(response)

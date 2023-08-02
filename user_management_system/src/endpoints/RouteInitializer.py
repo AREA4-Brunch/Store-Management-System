@@ -1,6 +1,4 @@
-from flask import Flask
 from abc import ABC, abstractmethod
-
 
 
 class RouteInitializer(ABC):
@@ -9,5 +7,5 @@ class RouteInitializer(ABC):
     """
 
     @abstractmethod
-    def __call__(self, app: Flask) -> None:
+    def __call__(self, app) -> None:
         pass

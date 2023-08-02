@@ -1,9 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from werkzeug.security import generate_password_hash, check_password_hash
+# from flask_migrate import Migrate
+# from werkzeug.security import generate_password_hash, check_password_hash
 
 
-from .settings import DATABASES
+from .settings import Settings
 
 
 # ====================================================
@@ -11,8 +11,8 @@ from .settings import DATABASES
 
 
 
-DATABASE: SQLAlchemy = DATABASES["users"]["database"]
-MIGRATE: Migrate = DATABASES["users"]["migrate"]
+DATABASE: SQLAlchemy = Settings.DATABASES["users"]["database"]
+# MIGRATE: Migrate = Settings.DATABASES["users"]["migrate"]
 
 
 
@@ -79,7 +79,8 @@ class User(DATABASE.Model):
         self.password = password
 
     def check_password(self, password):
-        return check_password_hash(self.password, password)
+        # return check_password_hash(self.password, password)
+        return self.password == password
 
     def delete(self):
         # remove all has_role objects that have user.id as foreign key

@@ -1,9 +1,10 @@
 from flask import request as flask_request
 from flask import jsonify
+from flask_jwt_extended import get_jwt_header
 
 from ..models import User
 from .RouteInitializer import RouteInitializer
-from .utils import is_valid_email_format, generate_jwts
+from .utils import is_valid_email_format, generate_jwts, is_logged_in
 
 
 class LoginRouteInitializer(RouteInitializer):
@@ -35,8 +36,8 @@ class LoginRouteInitializer(RouteInitializer):
 
             def parse_login_form():
                 data = dict({
-                    "email": flask_request.form.get("email", ''),
-                    "password": flask_request.form.get("password", ''),
+                    "email": flask_request.json.get("email", ''),
+                    "password": flask_request.json.get("password", ''),
                 })
 
                 # check if all required fields have been filled out
@@ -63,6 +64,12 @@ class LoginRouteInitializer(RouteInitializer):
                 # validate_password()
 
             try:
+                # in case user is already logged in then do not login again
+                if is_logged_in()[0]:
+                    access_token = flask_request.headers.get('Authorization')\
+                                                .replace('Bearer ', '')
+                    return jsonify({ "accessToken": access_token }), 200
+
                 data = parse_login_form()
                 validate_login_form(data)
 

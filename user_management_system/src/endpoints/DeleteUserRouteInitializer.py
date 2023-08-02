@@ -1,11 +1,18 @@
 from flask import request as flask_request
 from flask import jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity,
+    get_jwt,
+)
 
+from sqlalchemy.exc import NoResultFound
+from redis import Redis
 
 from ..models import User
 from .RouteInitializer import RouteInitializer
 from ..decorators import login_required
+from .utils import add_jwt_to_blocklist
 
 
 class DeleteUserRouteInitializer(RouteInitializer):
@@ -14,12 +21,13 @@ class DeleteUserRouteInitializer(RouteInitializer):
         """
         logger = app.app.logger
         db = app.databases["users"]["database"]
+        redis: Redis = app['redis_client']
 
         # ==================================================
         # Endpoints:
 
         @app.app.route('/delete', methods=["POST"])
-        @login_required(reraise=True)
+        @login_required(reraise=False)
         def delete_user():
             return delete_user_view()
 
@@ -39,30 +47,42 @@ class DeleteUserRouteInitializer(RouteInitializer):
                     # 'additional_claims': get_jwt()
                 })
 
+                if data['email'] is None:
+                    raise ParsingError('Uknown user.')
+
                 return data
 
             try:
                 data = parse_request_data()
 
-                with db.session.begin():
-                    user = db.session.query(User).with_for_update() \
-                            .filter_by(email=data['email']).one()
-
-                    if user is None:
-                        raise UserDoesNotExist('Uknown user.')
+                try:
+                    user = db.session.query(User) \
+                             .filter_by(email=data['email']) \
+                             .with_for_update().one()
+                    # if user is None:
+                    #     raise UserDoesNotExist('Uknown user.')
 
                     # remove the user and rows that have cascade delete
                     user.delete()
+
+                    # blocklist the token used by this user to access the website                    
+                    add_jwt_to_blocklist(redis, get_jwt())
+
                     db.session.commit()
+
+                except Exception as e:
+                    db.session.rollback()
+                    raise e
 
             except ParsingError as e:
                 return jsonify({
                     "message": f'{e}'
                 }), 400
 
-            except UserDoesNotExist as e:
+            except (UserDoesNotExist, NoResultFound) as e:
+                msg = 'Unknown user.'
                 return jsonify({
-                    "message": f'{e}'
+                    "message": f'{msg}'
                 }), 400
 
             except Exception as e:  # unexpected error

@@ -1,9 +1,10 @@
 import pymysql
 
+from src.settings import Settings
 from src.apps import UserManagementSystem   
 
 
-pymysql.install_as_MySQLdb()
+# pymysql.install_as_MySQLdb()
 
 
 # ====================================================
@@ -18,7 +19,10 @@ APP = UserManagementSystem()
 
 
 def main():
-    APP.run()  # [noreturn]
+    APP.run(
+        host=Settings.HOST,
+        port=Settings.PORT
+    )  # [noreturn]
 
 
 

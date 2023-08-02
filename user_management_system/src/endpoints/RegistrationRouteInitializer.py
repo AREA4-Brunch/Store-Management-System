@@ -2,7 +2,8 @@ import re  # for validating email address format
 
 from flask import request as flask_request
 from flask import jsonify
-from sqlalchemy.exc import IntegrityError
+from pymysql.err import IntegrityError as pymysql_IntegrityError
+from sqlalchemy.exc import IntegrityError as sql_alchemy_IntegrityError
 
 from ..models import User, Role, HasRole
 from .RouteInitializer import RouteInitializer
@@ -39,10 +40,10 @@ class RegistrationRouteInitializer(RouteInitializer):
 
             def parse_registration_form():
                 data = dict({
-                    "forename": flask_request.form.get("forename", ''),
-                    "surname": flask_request.form.get("surname", ''),
-                    "email": flask_request.form.get("email", ''),
-                    "password": flask_request.form.get("password", ''),
+                    "forename": flask_request.json.get("forename", ''),
+                    "surname": flask_request.json.get("surname", ''),
+                    "email": flask_request.json.get("email", ''),
+                    "password": flask_request.json.get("password", ''),
                 })
 
                 # check if all required fields have been filled out
@@ -72,7 +73,6 @@ class RegistrationRouteInitializer(RouteInitializer):
                 validate_registration_form(data)
 
                 # add the user to the db along with its role
-                # with db.session.begin_nested():
                 user = User(
                     forename=data["forename"],
                     surname=data["surname"],
@@ -80,17 +80,23 @@ class RegistrationRouteInitializer(RouteInitializer):
                     password=data["password"]
                 )
 
-                with db.session.begin():
+                try:
+                # with db.session.begin_nested():
                     db.session.add(user)
                     db.session.flush()
 
-                    # role = Role.query.filter_by(name=role_name).first()
-                    role = db.session.query(Role).filter_by(name=role_name) \
-                             .with_for_update().one()
+                    role = Role.query.filter_by(name=role_name).first()
+                    # fetch role hence make sure it does not get deleted before commit
+                    # role = db.session.query(Role).with_for_update() \
+                    #          .filter_by(name=role_name) \
+                    #          .one()
                     has_role = HasRole(user_id=user.id, role_id=role.id)
-
                     db.session.add(has_role)
                     db.session.commit()
+
+                except Exception as e:
+                    db.session.rollback()
+                    raise e
 
             except ParsingError as e:
                 return jsonify({
@@ -102,14 +108,18 @@ class RegistrationRouteInitializer(RouteInitializer):
                     "message": f'{e}'
                 }), 400
 
-            except IntegrityError as e:
+            # violated UNIQUE db column restriction
+            except (sql_alchemy_IntegrityError,
+                    pymysql_IntegrityError) as e:
+                # u = User.query.filter_by(email=data["email"]).first()
+                # logger.error(f'Email already exists man: new: {user}, old: {u}')
                 err_msg = e.args[0].strip()  # get only msg of exception
                 # handle unique fields, tried to set already existing vals
                 if 'Duplicate entry' in err_msg:
-                    if err_msg.endswith("for key 'email'\")"):
-                        return jsonify({
-                            "message": f'Email already exists.'
-                        }), 400
+                    # if err_msg.endswith("for key 'email'\")"):
+                    return jsonify({
+                        "message": f'Email already exists.'
+                    }), 400
 
                 raise e  # else unrecognized error
 
