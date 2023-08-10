@@ -35,22 +35,22 @@ class DefaultBlueprintsConfig(CustomConfigBase):
 
 
 class DefaultConfigurationBuilder:
-    def __init__(self, flask_app_config: Configuration) -> None:
-        self._config = flask_app_config
+    def __init__(self, flask_app_config_cls: Type[Configuration]) -> None:
+        self._config = flask_app_config_cls()
 
     def build(self) -> Configuration:
         return self._config
 
     def addLoggingConfig(
         self,
-        logger_cls: Type[CustomConfigBase]=DefaultLoggerConfig
+        logger_cls: Type[CustomConfigBase]
     ):
         self._config = logger_cls(self._config)
         return self
 
     def addBlueprintsConfig(
         self,
-        logger_cls: Type[CustomConfigBase]=DefaultBlueprintsConfig
+        logger_cls: Type[CustomConfigBase]
     ):
         self._config = logger_cls(self._config)
         return self

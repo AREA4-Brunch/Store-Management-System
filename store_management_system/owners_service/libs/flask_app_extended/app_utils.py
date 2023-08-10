@@ -1,29 +1,9 @@
-from flask import Flask, Blueprint
 from typing import Union
 from collections.abc import Iterable
-from .app import AppFactoryBase, ConfigFactoryBase
+from flask import Flask, Blueprint
 from .config import Configuration
-from .config_utils import DefaultConfigurationBuilder
+
 from .utils import load_attr_from_file
-
-
-
-class DefaultAppFactory(AppFactoryBase):
-    def create_app(self, config: Configuration) -> Flask:
-        app = DefaultAppBuilder(config) \
-              .setFlaskAppConfig() \
-              .bindBlueprints() \
-              .build()
-        return app
-
-
-class DefaultConfigFactory(ConfigFactoryBase):
-    def create_config(self, flask_app_config: Configuration) -> Configuration:
-        config = DefaultConfigurationBuilder(flask_app_config) \
-                .addLoggingConfig() \
-                .addBlueprintsConfig() \
-                .build()
-        return config
 
 
 class DefaultAppBuilder:
@@ -63,8 +43,9 @@ class DefaultAppBuilder:
         return self
 
     def bindBlueprints(self, url_blueprints=None):
-        """ url_blueprints can be an iterable containing pairs (url_prefix, flask.Blueprint)
-            or iterables containing them, or both.
+        """ url_blueprints can be an iterable containing
+            pairs (url_prefix, flask.Blueprint) or iterables
+            containing them, or both.
         """
         # if blueprints is not provided load in from
         # file specified in selected configuration class

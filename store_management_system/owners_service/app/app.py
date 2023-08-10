@@ -1,10 +1,5 @@
-from libs.flask_app_extended.app_utils import (
-    DefaultAppFactory, DefaultConfigFactory
-)
+from libs.flask_app_extended.app import DefaultAppFactory
 from .settings import FlaskAppConfig
 
 
-
-APP = DefaultAppFactory().create_app(
-    DefaultConfigFactory().create_config(FlaskAppConfig())
-)
+APP = DefaultAppFactory(FlaskAppConfig).create_app()
