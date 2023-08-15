@@ -90,15 +90,14 @@ class DefaultAppBuilder:
 
         # else not provided so extract from decorated config
         initilizer_funcs_getters = self._config.get_on_init
-        cls = self._config.__class__
         for getter in initilizer_funcs_getters:
-            self._addInitializer(getter(cls))
+            self._addInitializer(getter(self._config))
 
         return self
 
     def _addInitializer(self, initializer_func):
         """ Adds initializers in given order, FIFO execution order. """
-        self._inits.add(initializer_func)
+        self._inits.append(initializer_func)
 
     def _removeInitializer(self, val=None, idx: int=None):
         """ Removes an initializer by val if provided, else by idx. """

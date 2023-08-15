@@ -11,10 +11,10 @@ class DefaultLoggerConfig(CustomConfigBase):
         super().__init__(config)
 
     @classmethod
-    def get_on_init(cls):
+    def get_on_init(cls, this: CustomConfigBase):
         def on_init(app: Flask):
             logging.basicConfig(
-                filename=cls.LOG_FILE_PATH,
+                filename=cls.LOG_FILE_PATH,  # <=> this.LOG_FILE_PATH[0],
                 level=logging.INFO,
                 format='%(asctime)s [%(levelname)s] %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S'
@@ -32,25 +32,3 @@ class DefaultBlueprintsConfig(CustomConfigBase):
     # (url_prefix, flask.Blueprint) or iterables containing
     # them, or both.
     URL_BLUEPRINTS_PATH = 'app.urls.url_blueprints'
-
-
-class DefaultConfigurationBuilder:
-    def __init__(self, flask_app_config_cls: Type[Configuration]) -> None:
-        self._config = flask_app_config_cls()
-
-    def build(self) -> Configuration:
-        return self._config
-
-    def addLoggingConfig(
-        self,
-        logger_cls: Type[CustomConfigBase]
-    ):
-        self._config = logger_cls(self._config)
-        return self
-
-    def addBlueprintsConfig(
-        self,
-        logger_cls: Type[CustomConfigBase]
-    ):
-        self._config = logger_cls(self._config)
-        return self

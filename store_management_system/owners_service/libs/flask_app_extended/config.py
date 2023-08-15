@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-
+from typing import Type
 
 
 class Configuration(ABC):
@@ -43,3 +43,21 @@ class CustomConfigBase(Configuration, ABC):
 
     def getFlaskAppConfiguration(self):
         return self._config.getFlaskAppConfiguration()
+
+
+class ConfigurationBuilderBase(ABC):
+    @abstractmethod
+    def build(self) -> Configuration:
+        pass
+
+
+class DefaultConfigurationBuilder(ConfigurationBuilderBase):
+    def __init__(self, flask_app_config_cls: Type[Configuration]) -> None:
+        super().__init__()
+        self._config = flask_app_config_cls()
+
+    def build(self) -> Configuration:
+        return self._config
+
+    def add(self, config_cls: Type[Configuration]):
+        self._config = config_cls(self._config)
