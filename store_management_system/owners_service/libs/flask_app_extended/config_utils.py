@@ -19,6 +19,8 @@ class DefaultLoggerConfig(CustomConfigBase):
                 format='%(asctime)s [%(levelname)s] %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S'
             )
+            logging.error('Configured')
+            print('Configured')
         return on_init
 
     LOG_FILE_PATH = f'./logs/log1.log'

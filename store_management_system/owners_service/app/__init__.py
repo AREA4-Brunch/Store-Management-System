@@ -1,3 +1,1 @@
-from .app import (
-    APP
-)
+from .app import get_app
