@@ -1,16 +1,16 @@
-from app.app import IoCAppContainer, get_app
+"""
+    example of starting the app
+        python manage.py run --host=localhost --port=5000 --debug
+
+"""
+
+from app.app import create_app
 from flask.cli import FlaskGroup
 
 
-def main():
-    container = IoCAppContainer()
-    # must be done here:
-    container.init_resources()
-    container.wire(modules=[ 'app.app', ])
 
-    # to start app
-    # python manage.py run --host=localhost --port=5000 --debug
-    cli = FlaskGroup(create_app=get_app)
+def main():
+    cli = FlaskGroup(create_app=create_app)
     cli()
 
 

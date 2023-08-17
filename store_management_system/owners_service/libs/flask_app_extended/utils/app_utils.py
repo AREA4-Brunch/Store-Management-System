@@ -1,8 +1,7 @@
 from typing import Union
 from collections.abc import Iterable
 from flask import Flask, Blueprint
-from .config import Configuration
-
+from ..config import Configuration
 from .utils import load_attr_from_file
 
 
@@ -32,13 +31,13 @@ class DefaultAppBuilder:
         return self._config
 
     def setActiveConfigClass(self, config_class: Configuration):
-        """ Sets default/failback class used for omited args in setters. """
+        """ Sets default/failback class used for omitted args in setters. """
         self._config = config_class
         return self
 
     def setFlaskAppConfig(self, flask_config_class=None):
         config = flask_config_class \
-               or self._config.getFlaskAppConfiguration()
+               or self._config.getDecoratedSubject()
         self._app.config.from_object(config)
         return self
 
@@ -89,7 +88,7 @@ class DefaultAppBuilder:
             return self
 
         # else not provided so extract from decorated config
-        initilizer_funcs_getters = self._config.get_on_init
+        initilizer_funcs_getters = self._config.get_all('get_on_init')
         for getter in initilizer_funcs_getters:
             self._addInitializer(getter(self._config))
 

@@ -1,14 +1,24 @@
 import logging
-import redis
-from flask import Flask
 from libs.flask_app_extended.config import (
-    FlaskAppConfigBase,
     CustomConfigBase,
-    Configuration
+    CustomConfigDecoratorBase,
+    DefaultConfigFactory,
 )
 
 
-class FlaskAppConfig(FlaskAppConfigBase):
+
+# ========================================================
+# Core Configurations Helpers:
+
+
+
+from libs.flask_app_extended.utils.config_utils import (
+    DefaultFlaskAppLoggerConfig,
+    DefaultBlueprintsConfig,
+)
+
+
+class FlaskAppConfig(CustomConfigBase):
     DEBUG = True
 
     LOGGING_LEVEL = logging.DEBUG
@@ -21,22 +31,49 @@ class FlaskAppConfig(FlaskAppConfigBase):
     # JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
 
-# class RedisConfig(CustomConfigBase):
-#     def __init__(self, config: Configuration) -> None:
-#         super().__init__(config)
 
-#     @classmethod
-#     def get_on_init(cls, this: CustomConfigBase):
-#         def on_init(app: Flask):
-#             redis_client = redis.StrictRedis(
-#                 host=this.HOST,
-#                 port=this.PORT,
-#                 db=this.DB,
-#                 decode_responses=this.DECODE_RESPONSES
-#             )
-#         return on_init
+# ========================================================
+# Gateways Configuration Helpers:
 
-#     HOST = '127.0.0.1'
-#     PORT = 6379
-#     DB = 0
-#     DECODE_RESPONSES = True
+
+
+class RedisAuthorizationConfig(CustomConfigBase):
+    HOST = '127.0.0.1'
+    PORT = 6379
+    DB = 0
+    DECODE_RESPONSES = True
+
+
+class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
+    auth = DefaultConfigFactory(
+        RedisAuthorizationConfig
+    ).create_config()
+
+
+
+# ========================================================
+# App Configuration:
+
+
+
+class CoreConfiguration(CustomConfigDecoratorBase):
+    flask_app = DefaultConfigFactory(FlaskAppConfig, [
+        DefaultFlaskAppLoggerConfig,
+        DefaultBlueprintsConfig,
+    ]).create_config()
+
+
+class GatewaysConfiguration(CustomConfigDecoratorBase):
+    redis = DefaultConfigFactory(CustomConfigBase, [
+        RedisGatewaysConfiguration,
+    ]).create_config()
+
+
+class AppConfiguration(CustomConfigBase):
+    core = DefaultConfigFactory(CustomConfigBase, [
+        CoreConfiguration,
+    ]).create_config()
+
+    gateways = DefaultConfigFactory(CustomConfigBase, [
+        GatewaysConfiguration,
+    ]).create_config()

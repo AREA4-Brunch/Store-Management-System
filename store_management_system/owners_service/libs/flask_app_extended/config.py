@@ -2,31 +2,45 @@ from abc import abstractmethod, ABC
 from typing import Type
 
 
+
 class Configuration(ABC):
     """ Component in decorator pattern. """
 
     @abstractmethod
-    def __getattr__(self) -> list:
+    def __getattr__(self, attr_name: str):
+        """ Invoked only if attr_name was not found in this object. """
         pass
 
     @abstractmethod
-    def getFlaskAppConfiguration(self):
+    def get_all(self, attr_name) -> list:
+        pass
+
+    @abstractmethod
+    def getDecoratedSubject(self):
         pass
 
 
-class FlaskAppConfigBase(Configuration):
+class CustomConfigBase(Configuration):
     """ Subject in decorator pattern. """
 
-    def __getattr__(self, attr_name) -> list:
+    def __getattr__(self, attr_name: str):
+        """ Invoked only if attr_name was not found in this object. """
+        # raise KeyError(f'{self.__class__.__name__} has no attribute called: {attr_name}')
+        if hasattr(self.__class__, attr_name):  # check class
+            return getattr(self.__class__, attr_name)
+
+        return super().__getattr__(attr_name)
+
+    def get_all(self, attr_name) -> list:
         if not hasattr(self.__class__, attr_name):
             return []
         return [ getattr(self.__class__, attr_name) ]
 
-    def getFlaskAppConfiguration(self):
+    def getDecoratedSubject(self):
         return self
 
 
-class CustomConfigBase(Configuration, ABC):
+class CustomConfigDecoratorBase(Configuration):
     """ Decorator in decorator pattern. """
 
     # private attributes:
@@ -35,14 +49,50 @@ class CustomConfigBase(Configuration, ABC):
     def __init__(self, config: Configuration) -> None:
         self._config = config
 
-    def __getattr__(self, attr_name) -> list:
-        attrs = self._config.__getattr__(attr_name)
+    def __getattr__(self, attr_name: str):
+        """ Invoked only if attr_name was not found in this object.
+            Returns the result of the search in decorated config.
+        """
+        if hasattr(self.__class__, attr_name):  # check class
+            return getattr(self.__class__, attr_name)
+
+        return self._config.__getattr__(attr_name)
+
+    def get_all(self, attr_name) -> list:
+        attrs = self._config.get_all(attr_name)
         if hasattr(self.__class__, attr_name):
             attrs.append(getattr(self.__class__, attr_name))
         return attrs
 
-    def getFlaskAppConfiguration(self):
-        return self._config.getFlaskAppConfiguration()
+    def getDecoratedSubject(self):
+        return self._config.getDecoratedSubject()
+
+
+class ConfigFactoryBase(ABC):
+    @abstractmethod
+    def create_config(self) -> Configuration:
+        pass
+
+
+class DefaultConfigFactory(ConfigFactoryBase):
+    def __init__(
+        self,
+        config_base_cls: Type[Configuration],
+        additional_config_classes: list[Type[Configuration]]=[]
+            # = [DefaultLoggerConfig, DefaultBlueprintsConfig],
+    ) -> None:
+        super().__init__()
+        self._config_base_cls = config_base_cls
+        self._additional_config_classes = additional_config_classes
+
+    def create_config(self) -> Configuration:
+        config = DefaultConfigurationBuilder(self._config_base_cls)
+
+        for config_cls in self._additional_config_classes:
+            config.add(config_cls)
+
+        config = config.build()
+        return config
 
 
 class ConfigurationBuilderBase(ABC):
