@@ -1,5 +1,5 @@
 from typing import Union
-from collections.abc import Iterable
+from collections.abc import Iterable, Callable
 from flask import Flask, Blueprint
 from ..config import Configuration
 from .utils import load_attr_from_file
@@ -41,16 +41,21 @@ class DefaultAppBuilder:
         self._app.config.from_object(config)
         return self
 
-    def bindBlueprints(self, url_blueprints=None):
+    def bindBlueprints(self, url_blueprints: Iterable=None):
         """ url_blueprints can be an iterable containing
             pairs (url_prefix, flask.Blueprint) or iterables
             containing them, or both.
         """
         # if blueprints is not provided load in from
-        # file specified in selected configuration class
+        # files specified in selected configuration class
         if url_blueprints is None:
-            blueprints_var_path: str = self._config.URL_BLUEPRINTS_PATH
-            url_blueprints = load_attr_from_file(blueprints_var_path)
+            blueprints_var_paths: Iterable[str] \
+                = self._config.get_all('_BLUEPRINTS_TO_BIND_PATH')
+
+            for blueprints_var_path in blueprints_var_paths:
+                url_blueprints = load_attr_from_file(blueprints_var_path)
+                if url_blueprints is not None:
+                    return self.bindBlueprints(url_blueprints)
 
         def process_url_blueprints(
             cur_url_prefix: str,
@@ -67,6 +72,29 @@ class DefaultAppBuilder:
                                        blueprint_or_list_)
 
         process_url_blueprints('', url_blueprints)
+        return self
+
+    def bindCommands(self, commands: Iterable=None):
+        """ commands can be an iterable containing
+            command functions or such nested iterables.
+        """
+        # if commands is not provided load in from
+        # selected configuration class
+        if commands is None:
+            commands = self._config.get_all('_COMMANDS_TO_BIND_PATH')
+
+        def process_commands(
+            command_or_list: Union[Callable, Iterable]
+        ):
+            if isinstance(command_or_list, Callable):
+                self._app.cli.add_command(command_or_list)
+                return
+
+            # else command_or_list is the collection of same structure
+            for command_or_list_ in command_or_list:
+                process_commands(command_or_list_)
+
+        process_commands(commands)
         return self
 
     @property

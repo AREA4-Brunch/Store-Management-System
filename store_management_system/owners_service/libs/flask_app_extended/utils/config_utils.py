@@ -76,8 +76,8 @@ class DefaultGlobalLoggerConfig(CustomConfigDecoratorBase):
 
 
 
-class DefaultBlueprintsConfig(CustomConfigDecoratorBase):
+class DefaultURLBlueprintsConfig(CustomConfigDecoratorBase):
     # path to pbject that can be an iterable containing pairs
     # (url_prefix, flask.Blueprint) or iterables containing
     # them, or both.
-    URL_BLUEPRINTS_PATH = 'app.urls.url_blueprints'
+    _BLUEPRINTS_TO_BIND_PATH = 'app.urls.url_blueprints'

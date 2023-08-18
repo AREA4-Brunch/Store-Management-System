@@ -21,6 +21,7 @@ class DefaultAppFactory(AppFactoryBase):
         app = DefaultAppBuilder(self._config) \
               .setFlaskAppConfig() \
               .bindBlueprints() \
+              .bindCommands() \
               .addInitializers() \
               .build()
 
