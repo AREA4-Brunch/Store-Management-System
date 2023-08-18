@@ -1,6 +1,7 @@
 import redis
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from dependency_injector import containers, providers
 from dependency_injector.wiring import inject, Provide
 from libs.flask_app_extended.app import DefaultAppFactory
@@ -14,6 +15,7 @@ class Core(containers.DeclarativeContainer):
     config = providers.Dependency(instance_of=Configuration)
 
     app = providers.Singleton(
+        # lambda config: Flask(__name__).config.from_object(config),
         lambda config: DefaultAppFactory(config).create_app(),
         config.provided.flask_app
     )
@@ -37,7 +39,13 @@ class Services(containers.DeclarativeContainer):
     gateways = providers.DependenciesContainer()
 
     # store's database
-    db_store = providers.Singleton(SQLAlchemy, core.app)
+    db_store_management = providers.Singleton(SQLAlchemy, core.app)
+
+    migrate_store_management = providers.Singleton(
+        Migrate,
+        core.app,
+        db_store_management
+    )
 
     auth = providers.Singleton(
         AuthenticationService,
@@ -67,13 +75,14 @@ class ApplicationIoCContainer(containers.DeclarativeContainer):
     )
 
 
+
 def create_app() -> Flask:
     container = ApplicationIoCContainer()
     container.init_resources()
-    # container.core.init_resources()
-    container.wire(modules=[ 'app.app', ])
-
-    return container.core.app()
+    container.wire(modules=[ 'app.app' ])
+    app = container.core.app()
+    app.container = container
+    return app
 
 
 @inject

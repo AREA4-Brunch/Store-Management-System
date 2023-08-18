@@ -3,3 +3,4 @@
 *.log
 **/dump.rdb
 **/tmp.py
+**/__secrets.py

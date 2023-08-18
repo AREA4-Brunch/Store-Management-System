@@ -4,7 +4,8 @@ from libs.flask_app_extended.config import (
     CustomConfigDecoratorBase,
     DefaultConfigFactory,
 )
-
+from .management.commands import store_management_db
+from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env variables
 
 
 # ========================================================
@@ -14,8 +15,9 @@ from libs.flask_app_extended.config import (
 
 from libs.flask_app_extended.utils.config_utils import (
     DefaultFlaskAppLoggerConfig,
-    DefaultBlueprintsConfig,
+    DefaultURLBlueprintsConfig,
 )
+
 
 
 class FlaskAppConfig(CustomConfigBase):
@@ -23,12 +25,19 @@ class FlaskAppConfig(CustomConfigBase):
 
     LOGGING_LEVEL = logging.DEBUG
 
-    # SQLALCHEMY_DATABASE_URI = Settings.DATABASES["users"]["uri"]
-    # SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/store_management"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = "JWT_SECRET_DEV_KEY"
     # JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=60)
     # JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+
+
+
+class CommandsConfiguration(CustomConfigDecoratorBase):
+    _COMMANDS_TO_BIND_PATH = (
+        store_management_db.upgrade_and_populate,
+    )
 
 
 
@@ -59,7 +68,8 @@ class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
 class CoreConfiguration(CustomConfigDecoratorBase):
     flask_app = DefaultConfigFactory(FlaskAppConfig, [
         DefaultFlaskAppLoggerConfig,
-        DefaultBlueprintsConfig,
+        DefaultURLBlueprintsConfig,
+        CommandsConfiguration
     ]).create_config()
 
 

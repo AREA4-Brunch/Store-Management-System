@@ -4,6 +4,8 @@ from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 # from flask_migrate import Migrate
 
+from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env variables
+
 
 
 class Settings:
@@ -23,7 +25,7 @@ class Settings:
 
     DATABASES = {
         "users": {
-            "uri": 'mysql+pymysql://root:gN?*ec2dwiw3?(Cyfhel@localhost/authentication',
+            "uri": f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/authentication",
             "database": SQLAlchemy(),
             # "migrate": Migrate(),
             # (module_name, function_name)
