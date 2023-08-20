@@ -16,7 +16,7 @@ class Configuration(ABC):
         pass
 
     @abstractmethod
-    def getDecoratedSubject(self):
+    def get_decorated_subject(self):
         pass
 
 
@@ -36,7 +36,7 @@ class CustomConfigBase(Configuration):
             return []
         return [ getattr(self.__class__, attr_name) ]
 
-    def getDecoratedSubject(self):
+    def get_decorated_subject(self):
         return self
 
 
@@ -64,8 +64,8 @@ class CustomConfigDecoratorBase(Configuration):
             attrs.append(getattr(self.__class__, attr_name))
         return attrs
 
-    def getDecoratedSubject(self):
-        return self._config.getDecoratedSubject()
+    def get_decorated_subject(self):
+        return self._config.get_decorated_subject()
 
 
 class ConfigFactoryBase(ABC):

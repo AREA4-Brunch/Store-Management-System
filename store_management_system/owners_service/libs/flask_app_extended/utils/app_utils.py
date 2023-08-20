@@ -30,18 +30,18 @@ class DefaultAppBuilder:
     def config_class(self) -> Configuration:
         return self._config
 
-    def setActiveConfigClass(self, config_class: Configuration):
+    def set_active_config_class(self, config_class: Configuration):
         """ Sets default/failback class used for omitted args in setters. """
         self._config = config_class
         return self
 
-    def setFlaskAppConfig(self, flask_config_class=None):
+    def set_flask_app_config(self, flask_config_class=None):
         config = flask_config_class \
-               or self._config.getDecoratedSubject()
+               or self._config.get_decorated_subject()
         self._app.config.from_object(config)
         return self
 
-    def bindBlueprints(self, url_blueprints: Iterable=None):
+    def bind_blueprints(self, url_blueprints: Iterable=None):
         """ url_blueprints can be an iterable containing
             pairs (url_prefix, flask.Blueprint) or iterables
             containing them, or both.
@@ -55,7 +55,7 @@ class DefaultAppBuilder:
             for blueprints_var_path in blueprints_var_paths:
                 url_blueprints = load_attr_from_file(blueprints_var_path)
                 if url_blueprints is not None:
-                    return self.bindBlueprints(url_blueprints)
+                    return self.bind_blueprints(url_blueprints)
 
         def process_url_blueprints(
             cur_url_prefix: str,
@@ -74,7 +74,7 @@ class DefaultAppBuilder:
         process_url_blueprints('', url_blueprints)
         return self
 
-    def bindCommands(self, commands: Iterable=None):
+    def bind_commands(self, commands: Iterable=None):
         """ commands can be an iterable containing
             command functions or such nested iterables.
         """
@@ -107,26 +107,26 @@ class DefaultAppBuilder:
         """ Sets initializers to be executed in FIFO order on build(). """
         self._inits = []
         for init in initilizer_funcs:
-            self._addInitializer(init)
+            self._add_initializer(init)
 
-    def addInitializers(self, initilizer_funcs=None):
+    def add_initializers(self, initilizer_funcs=None):
         if initilizer_funcs is not None:
             for init in initilizer_funcs:
-                self._addInitializer(init)
+                self._add_initializer(init)
             return self
 
         # else not provided so extract from decorated config
         initilizer_funcs_getters = self._config.get_all('get_on_init')
         for getter in initilizer_funcs_getters:
-            self._addInitializer(getter(self._config))
+            self._add_initializer(getter(self._config))
 
         return self
 
-    def _addInitializer(self, initializer_func):
+    def _add_initializer(self, initializer_func):
         """ Adds initializers in given order, FIFO execution order. """
         self._inits.append(initializer_func)
 
-    def _removeInitializer(self, val=None, idx: int=None):
+    def _remove_initializer(self, val=None, idx: int=None):
         """ Removes an initializer by val if provided, else by idx. """
         if val is not None:
             self._inits.remove(val)

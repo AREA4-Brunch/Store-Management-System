@@ -19,10 +19,10 @@ class DefaultAppFactory(AppFactoryBase):
 
     def create_app(self) -> Flask:
         app = DefaultAppBuilder(self._config) \
-              .setFlaskAppConfig() \
-              .bindBlueprints() \
-              .bindCommands() \
-              .addInitializers() \
+              .set_flask_app_config() \
+              .bind_blueprints() \
+              .bind_commands() \
+              .add_initializers() \
               .build()
 
         return app
