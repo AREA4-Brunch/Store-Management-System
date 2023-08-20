@@ -77,16 +77,16 @@ class ConfigFactoryBase(ABC):
 class DefaultConfigFactory(ConfigFactoryBase):
     def __init__(
         self,
-        config_base_cls: Type[Configuration],
+        config_base_obj: Configuration,
         additional_config_classes: list[Type[Configuration]]=[]
             # = [DefaultLoggerConfig, DefaultBlueprintsConfig],
     ) -> None:
         super().__init__()
-        self._config_base_cls = config_base_cls
+        self._config_base_obj = config_base_obj
         self._additional_config_classes = additional_config_classes
 
     def create_config(self) -> Configuration:
-        config = DefaultConfigurationBuilder(self._config_base_cls)
+        config = DefaultConfigurationBuilder(self._config_base_obj)
 
         for config_cls in self._additional_config_classes:
             config.add(config_cls)
@@ -102,9 +102,9 @@ class ConfigurationBuilderBase(ABC):
 
 
 class DefaultConfigurationBuilder(ConfigurationBuilderBase):
-    def __init__(self, flask_app_config_cls: Type[Configuration]) -> None:
+    def __init__(self, flask_app_config_obj: Configuration) -> None:
         super().__init__()
-        self._config = flask_app_config_cls()
+        self._config = flask_app_config_obj
 
     def build(self) -> Configuration:
         return self._config

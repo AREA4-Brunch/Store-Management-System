@@ -2,7 +2,6 @@ from abc import abstractmethod, ABC
 from flask import Flask
 from libs.flask_app_extended.config import Configuration
 from .config import Configuration
-from .utils.app_utils import DefaultAppBuilder
 
 
 
@@ -18,11 +17,6 @@ class DefaultAppFactory(AppFactoryBase):
         self._config = config
 
     def create_app(self) -> Flask:
-        app = DefaultAppBuilder(self._config) \
-              .set_flask_app_config() \
-              .bind_blueprints() \
-              .bind_commands() \
-              .add_initializers() \
-              .build()
-
+        app = Flask(__name__)
+        app.config.from_object(self._config)
         return app

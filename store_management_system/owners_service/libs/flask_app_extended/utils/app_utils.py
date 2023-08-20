@@ -5,7 +5,7 @@ from ..config import Configuration
 from .utils import load_attr_from_file
 
 
-class DefaultAppBuilder:
+class DefaultFlaskAppInitializer:
     """ Just a useful utility used by DefaultAppFactory.
         Binds configuration properties to Flask app.
     """
@@ -13,14 +13,18 @@ class DefaultAppBuilder:
     # private attributes:
     # app: Flask
     # config: Configuration class - selected config src
-    # inits: list of callable objects, called on build()
+    # inits: list of callable objects, called on initialize()
 
-    def __init__(self, active_config_src_class: Configuration=None) -> None:
-        self._app = Flask(__name__)
+    def __init__(
+        self,
+        app=Flask(__name__),
+        active_config_src_class: Configuration=None,
+    ) -> None:
+        self._app = app
         self._config = active_config_src_class
         self._inits = []
 
-    def build(self) -> Flask:
+    def init(self) -> Flask:
         for init in self._inits:
             init(self._app)
 
@@ -55,7 +59,9 @@ class DefaultAppBuilder:
             for blueprints_var_path in blueprints_var_paths:
                 url_blueprints = load_attr_from_file(blueprints_var_path)
                 if url_blueprints is not None:
-                    return self.bind_blueprints(url_blueprints)
+                    self.bind_blueprints(url_blueprints)
+
+            return self
 
         def process_url_blueprints(
             cur_url_prefix: str,

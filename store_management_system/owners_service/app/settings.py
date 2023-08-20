@@ -29,6 +29,9 @@ class FlaskAppConfig(CustomConfigBase):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = "JWT_SECRET_DEV_KEY"
+    # JWT_TOKEN_LOCATION = [ 'headers' ]
+    # JWT_HEADER_NAME = 'Authorization'
+    # JWT_HEADER_TYPE = 'Bearer'
     # JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=60)
     # JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
@@ -55,7 +58,7 @@ class RedisAuthorizationConfig(CustomConfigBase):
 
 class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
     auth = DefaultConfigFactory(
-        RedisAuthorizationConfig
+        RedisAuthorizationConfig()
     ).create_config()
 
 
@@ -66,7 +69,11 @@ class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
 
 
 class CoreConfiguration(CustomConfigDecoratorBase):
-    flask_app = DefaultConfigFactory(FlaskAppConfig, [
+    flask_app = FlaskAppConfig()
+
+    # flask_app_extended lib's settings assume in
+    # app_utils.DefaultAppInitializer
+    flask_app_extended = DefaultConfigFactory(flask_app, [
         DefaultFlaskAppLoggerConfig,
         DefaultURLBlueprintsConfig,
         CommandsConfiguration
@@ -74,16 +81,16 @@ class CoreConfiguration(CustomConfigDecoratorBase):
 
 
 class GatewaysConfiguration(CustomConfigDecoratorBase):
-    redis = DefaultConfigFactory(CustomConfigBase, [
+    redis = DefaultConfigFactory(CustomConfigBase(), [
         RedisGatewaysConfiguration,
     ]).create_config()
 
 
 class AppConfiguration(CustomConfigBase):
-    core = DefaultConfigFactory(CustomConfigBase, [
+    core = DefaultConfigFactory(CustomConfigBase(), [
         CoreConfiguration,
     ]).create_config()
 
-    gateways = DefaultConfigFactory(CustomConfigBase, [
+    gateways = DefaultConfigFactory(CustomConfigBase(), [
         GatewaysConfiguration,
     ]).create_config()

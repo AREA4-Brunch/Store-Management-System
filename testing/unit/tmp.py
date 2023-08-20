@@ -1,10 +1,10 @@
 import requests
 
 
-BASE = "http://127.0.0.1:5000"
+BASE_AUTH = "http://127.0.0.1:5000"
 
 # payload = {
-#     "first_name": "Jim",
+#     "first_name": "Courier1",
 #     "last_name": "Morrison",
 #     "email": "god@27.com",
 #     "gender": "male",
@@ -23,7 +23,7 @@ def main():
 
 def send_register_customer():
     payload = {
-        "forename": "Jim",
+        "forename": "Customer1",
         "surname": "Morrison",
         "email": "god@27.com",
         "password": "heaven12"
@@ -32,8 +32,8 @@ def send_register_customer():
     # headers = {'accept': 'application/json'}
     headers = {'Content-Type': 'application/json'}
     response = requests.post(
-        url=BASE + '/register_customer',
-        data=payload
+        url=BASE_AUTH + '/register_customer',
+        json=payload
     )
 
     print(response)
@@ -43,7 +43,7 @@ def send_register_customer():
 
 def send_register_courier():
     payload = {
-        "forename": "Jim",
+        "forename": "Courier1",
         "surname": "Morrison",
         "email": "go2d@27.com",
         "password": "heaven12"
@@ -52,8 +52,8 @@ def send_register_courier():
     # headers = {'accept': 'application/json'}
     headers = {'Content-Type': 'application/json'}
     response = requests.post(
-        url=BASE + '/register_courier',
-        data=payload
+        url=BASE_AUTH + '/register_courier',
+        json=payload
     )
 
     print(response)
@@ -63,7 +63,7 @@ def send_register_courier():
 
 def send_login_courier():
     payload = {
-        # "forename": "Jim",
+        # "forename": "Courier1",
         # "surname": "Morrison",
         "email": "go2d@27.com",
         "password": "heaven12"
@@ -72,8 +72,8 @@ def send_login_courier():
     # headers = {'accept': 'application/json'}
     headers = {'Content-Type': 'application/json'}
     response = requests.post(
-        url=BASE + '/login',
-        data=payload
+        url=BASE_AUTH + '/login',
+        json=payload
     )
 
     print(response)
@@ -85,7 +85,7 @@ def send_login_courier():
 
 def send_login_courier_again(access_token):
     payload = {
-        # "forename": "Jim",
+        # "forename": "Courier1",
         # "surname": "Morrison",
         "email": "go2d@27.com",
         "password": "heaven12"
@@ -97,8 +97,8 @@ def send_login_courier_again(access_token):
         'Authorization': f'Bearer {access_token}'
     }
     response = requests.post(
-        url=BASE + '/login',
-        data=payload,
+        url=BASE_AUTH + '/login',
+        json=payload,
         headers=headers
     )
 
@@ -111,7 +111,7 @@ def send_login_courier_again(access_token):
 
 def send_delete_courier_no_header(access_token):
     payload = {
-        # "forename": "Jim",
+        # "forename": "Courier1",
         # "surname": "Morrison",
         "email": "go2d@27.com",
         "password": "heaven12"
@@ -120,8 +120,8 @@ def send_delete_courier_no_header(access_token):
     # headers = {'accept': 'application/json'}
     headers = {'Content-Type': 'application/json'}
     response = requests.post(
-        url=BASE + '/delete',
-        data=payload
+        url=BASE_AUTH + '/delete',
+        json=payload
     )
 
     print(response)
@@ -132,7 +132,7 @@ def send_delete_courier_no_header(access_token):
 def send_delete_courier(access_token):
     print(f'Trying access token: {access_token}')
     payload = {
-        # "forename": "Jim",
+        # "forename": "Courier1",
         # "surname": "Morrison",
         "email": "go2d@27.com",
         "password": "heaven12"
@@ -144,8 +144,8 @@ def send_delete_courier(access_token):
         'Authorization': f'Bearer {access_token}'
     }
     response = requests.post(
-        url=BASE + '/delete',
-        data=payload,
+        url=BASE_AUTH + '/delete',
+        json=payload,
         headers=headers
     )
 
