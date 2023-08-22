@@ -16,12 +16,12 @@ def login_required(*args_login, **kwargs_login):
     return decorator
 
 
-def role_required(*args_login, **kwargs_login):
+def roles_required_login(*args_login, **kwargs_login):
     def decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
             failure_response = AuthenticationService \
-                .role_required(*args_login, **kwargs_login)
+                .roles_required_login(*args_login, **kwargs_login)
 
             return failure_response \
                 or function(*args, **kwargs)

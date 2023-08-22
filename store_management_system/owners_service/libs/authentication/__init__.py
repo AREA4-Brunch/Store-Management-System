@@ -4,5 +4,5 @@ from .services import (
 
 from .decorators import (
     login_required,
-    role_required
+    roles_required_login
 )

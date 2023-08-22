@@ -13,7 +13,7 @@ class DefaultFlaskAppLoggerConfig(CustomConfigDecoratorBase):
     @classmethod
     def get_on_init(cls, this: CustomConfigDecoratorBase):
         def on_init(app: Flask):
-            log_level = app.logger.level
+            log_level = app.config['LOGGING_LEVEL']
             file_path = this.LOG_FILE_PATH  # <=> cls.LOG_FILE_PATH[0],
             format = this.FORMAT
             datefmt = this.DATEFMT

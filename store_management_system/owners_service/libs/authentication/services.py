@@ -1,5 +1,4 @@
-from functools import wraps
-from typing import Callable, Any
+from typing import Callable, Any, Iterable
 from redis import Redis
 from flask import Flask, jsonify
 from flask_jwt_extended import (
@@ -32,19 +31,6 @@ class AuthenticationService:
             return self._redis_client.sismember(blocklist_group, jti)
 
     @staticmethod
-    @jwt_required()
-    def role_required(role_name):
-        """ Returns None in case the given role is satisfied,
-            else returns appropriate, jsonified response.
-        """
-        claims = get_jwt()
-        if role_name not in claims["roles"]:
-            return jsonify({
-                'msg': 'Forbidden'
-            }), 403
-        return None
-
-    @staticmethod
     def login_required(
         response_func: Callable[[Exception], Any]=None,
         err_code: int=None,
@@ -60,8 +46,8 @@ class AuthenticationService:
             except Exception as e:
                 # use custom response_func if any
                 if response_func is not None:
-                    return response_func(e), err_code or 400
-                # handle errors with default messages
+                    return response_func(e)
+                # else handle errors with default messages or reraise
                 raise e
 
         except RevokedTokenError as e:  # token was blocklisted
@@ -84,3 +70,26 @@ class AuthenticationService:
             }), err_code or 400
 
         return None
+
+    @staticmethod
+    def roles_required(roles_names: Iterable[str]):
+        """ Returns None in case one of the given roles is satisfied,
+            else returns appropriate, jsonified response.
+        """
+        claims = get_jwt()
+        for role_name in roles_names:
+            if role_name in claims["roles"]:
+                return None  # allowed, has the role_name
+
+        return jsonify({
+            'msg': 'Forbidden'
+        }), 403
+
+    @staticmethod
+    def roles_required_login(*args, **kwargs):
+        """ Returns None in case one of the given roles is satisfied
+            and the user is logged in,
+            else returns appropriate, jsonified response.
+        """
+        return AuthenticationService.login_required(**kwargs) \
+            or AuthenticationService.roles_required(*args[ : 1], **kwargs)

@@ -1,4 +1,5 @@
 import redis
+import pymysql  # to init SQLAlchemy
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -97,7 +98,7 @@ class AppFactory(AppFactoryBase):
 
     def _init_container(self, container):
         container.init_resources()
-        container.wire(modules=[ 'app.app' ])
+        container.wire(modules=[ 'app.app', pymysql ])
 
         # construct the objects/initialize them through
         # their constructors
@@ -146,6 +147,7 @@ class AppFactory(AppFactoryBase):
               .init()
 
         return app
+
 
 def create_app():
     app  = AppFactory().create_app(ApplicationIoCContainer())

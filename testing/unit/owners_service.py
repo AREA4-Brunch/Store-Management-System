@@ -1,4 +1,5 @@
 import requests
+import os
 
 
 BASE_AUTH = "http://127.0.0.1:5000"
@@ -52,7 +53,21 @@ def send_login_owner():
 
 
 def create_product(access_token):
+    products_to_add = [
+        'cat1|cat2,Product Name,224.25',
+        'cat2,Product Name2,1000',
+    ]
+
+    path_tmp_file = 'tmp.csv'
+    with open(path_tmp_file, 'w') as file:
+        file.write('\n'.join(products_to_add))
+
     payload = {
+        
+    }
+
+    files = {
+        'file': open('tmp.csv', 'rb')
     }
 
     headers = {
@@ -60,15 +75,18 @@ def create_product(access_token):
     }
 
     print('\n\nSent create_product:')
+
     response = requests.post(
         url=BASE_OWNERS + '/update',
         data=payload,
-        headers=headers
+        headers=headers,
+        files=files
     )
 
     print(response)
     print(response.text)
     # print(response.json())
+    os.remove(path_tmp_file)
 
     return
 
