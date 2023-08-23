@@ -1,6 +1,5 @@
 from abc import abstractmethod, ABC
 from flask import Flask
-from libs.flask_app_extended.config import Configuration
 from .config import Configuration
 
 

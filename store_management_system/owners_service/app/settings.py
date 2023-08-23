@@ -1,22 +1,19 @@
 import logging
-from libs.flask_app_extended.config import (
+from flask_app_extended.config import (
     CustomConfigBase,
     CustomConfigDecoratorBase,
     DefaultConfigFactory,
 )
-from .management.commands import store_management_db
+from flask_app_extended.utils.config_utils import (
+    DefaultFlaskAppLoggerConfig,
+    DefaultURLBlueprintsConfig,
+)
 from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env variables
+
 
 
 # ========================================================
 # Core Configurations Helpers:
-
-
-
-from libs.flask_app_extended.utils.config_utils import (
-    DefaultFlaskAppLoggerConfig,
-    DefaultURLBlueprintsConfig,
-)
 
 
 
@@ -37,13 +34,6 @@ class FlaskAppConfig(CustomConfigBase):
 
 
 
-class CommandsConfiguration(CustomConfigDecoratorBase):
-    _COMMANDS_TO_BIND_PATH = (
-        store_management_db.upgrade_and_populate,
-    )
-
-
-
 # ========================================================
 # Gateways Configuration Helpers:
 
@@ -57,9 +47,7 @@ class RedisAuthorizationConfig(CustomConfigBase):
 
 
 class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
-    auth = DefaultConfigFactory(
-        RedisAuthorizationConfig()
-    ).create_config()
+    auth = RedisAuthorizationConfig()
 
 
 
@@ -76,7 +64,6 @@ class CoreConfiguration(CustomConfigDecoratorBase):
     flask_app_extended = DefaultConfigFactory(flask_app, [
         DefaultFlaskAppLoggerConfig,
         DefaultURLBlueprintsConfig,
-        CommandsConfiguration
     ]).create_config()
 
 

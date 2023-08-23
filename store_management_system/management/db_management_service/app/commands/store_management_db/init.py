@@ -6,8 +6,8 @@ from flask_migrate import init, migrate, upgrade
 
 
 
-@click.command('store_management_db_upgrade_and_populate')
-def store_management_db_upgrade_and_populate():
+@click.command('store_management_db_init')
+def store_management_db_init():
     db: SQLAlchemy = current_app.container \
                     .services.db_store_management()
 
@@ -18,7 +18,7 @@ def store_management_db_upgrade_and_populate():
 
     def update_db_structure():
         init()
-        migrate(message='Production Migration; store_management_db_upgrade_and_populate')
+        migrate(message='Initial Production Migration; store_management_db_init')
         upgrade()
 
     with current_app.app_context() as context:

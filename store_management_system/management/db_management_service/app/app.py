@@ -1,4 +1,3 @@
-import redis
 # import pymysql  # to init SQLAlchemy
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -7,7 +6,6 @@ from dependency_injector import containers, providers
 from dependency_injector.wiring import inject, Provide
 from flask_app_extended.app import DefaultAppFactory
 from flask_app_extended.config import Configuration
-from std_authentication import AuthenticationService
 from project_common.utils.app import CommonAppFactoryBase
 from db_store_management.models import create_models
 from .settings import AppConfiguration
@@ -20,18 +18,6 @@ class Core(containers.DeclarativeContainer):
     app = providers.Singleton(
         lambda config: DefaultAppFactory(config).create_app(),
         config.provided.flask_app
-    )
-
-
-class Gateways(containers.DeclarativeContainer):
-    config = providers.Dependency(instance_of=Configuration)
-
-    redis_client_auth = providers.Singleton(
-        redis.StrictRedis,
-        host=config.provided.redis.auth.HOST,
-        port=config.provided.redis.auth.PORT,
-        db=config.provided.redis.auth.DB,
-        decode_responses=config.provided.redis.auth.DECODE_RESPONSES
     )
 
 
@@ -54,12 +40,6 @@ class Services(containers.DeclarativeContainer):
         db_store_management
     )
 
-    auth = providers.Singleton(
-        AuthenticationService,
-        app=core.app,
-        redis_client=gateways.redis_client_auth
-    )
-
 
 class ApplicationIoCContainer(containers.DeclarativeContainer):
     config = providers.Singleton(AppConfiguration)
@@ -69,18 +49,11 @@ class ApplicationIoCContainer(containers.DeclarativeContainer):
         config=config.provided.core
     )
 
-    gateways = providers.Container(
-        Gateways,
-        config=config.provided.gateways
-    )
-
     services = providers.Container(
         Services,
         config=config.provided.services,
-        core=core,
-        gateways=gateways
+        core=core
     )
-
 
 
 class AppFactory(CommonAppFactoryBase):
@@ -107,9 +80,6 @@ class AppFactory(CommonAppFactoryBase):
             'core.app':
                 container.core.app(),
 
-            'gateways.redis_client_auth':
-                container.gateways.redis_client_auth(),
-
             'services.db_store_management':
                 container.services.db_store_management(),
 
@@ -118,9 +88,6 @@ class AppFactory(CommonAppFactoryBase):
 
             'services.db_store_management_models':
                 container.services.db_store_management_models(),
-
-            'services.auth':
-                container.services.auth(),
         }
 
         return variables

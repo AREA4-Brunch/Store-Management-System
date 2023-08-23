@@ -54,7 +54,7 @@ def send_login_owner():
 
 def create_product(access_token):
     products_to_add = [
-        'cat1|cat2,Product Name,224.25',
+        'cat1|cat2,Product Name3,2500',
         'cat2,Product Name2,1000',
     ]
 

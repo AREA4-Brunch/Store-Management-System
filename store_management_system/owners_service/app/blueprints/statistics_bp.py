@@ -6,7 +6,7 @@ from flask import (
     jsonify,
 )
 from flask_sqlalchemy import SQLAlchemy
-from libs.authentication.decorators import roles_required_login
+from std_authentication.decorators import roles_required_login
 from ..models import Order, Product
 
 
