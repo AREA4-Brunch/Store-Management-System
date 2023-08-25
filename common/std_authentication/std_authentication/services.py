@@ -34,7 +34,8 @@ class AuthenticationService:
     def login_required(
         response_func: Callable[[Exception], Any]=None,
         err_code: int=None,
-        reraise: bool=False
+        reraise: bool=False,
+        **kwargs
     ):
         """ Returns None in case the user is logged in properly,
             else returns appropriate, jsonified response.
@@ -72,18 +73,26 @@ class AuthenticationService:
         return None
 
     @staticmethod
-    def roles_required(roles_names: Iterable[str]):
-        """ Returns None in case one of the given roles is satisfied,
-            else returns appropriate, jsonified response.
+    def roles_required(
+        roles_names: Iterable[str],
+        roles_response_func: Callable[[dict], Any] \
+            =lambda _: (jsonify({'msg': 'Forbidden'}), 403),
+        roles_required_cnt=1,
+        **kwargs
+    ):
+        """ Returns None in case default or given number of given
+            roles is satisfied, else returns default or given
+            response to which it passes as arg the dict of the
+            roles present in the request's jwt.
         """
         claims = get_jwt()
         for role_name in roles_names:
             if role_name in claims["roles"]:
-                return None  # allowed, has the role_name
+                roles_required_cnt -= 1
+                if roles_required_cnt <= 0:
+                    return None  # allowed, has the role_name
 
-        return jsonify({
-            'msg': 'Forbidden'
-        }), 403
+        return roles_response_func(claims['roles'])
 
     @staticmethod
     def roles_required_login(*args, **kwargs):
