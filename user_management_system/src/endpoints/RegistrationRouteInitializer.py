@@ -58,7 +58,8 @@ class RegistrationRouteInitializer(RouteInitializer):
 
             def validate_registration_form(data):
                 def validate_email():
-                    if not is_valid_email_format(data["email"]):
+                    if not is_valid_email_format(data["email"]) \
+                    or not (1 <= len(data['email']) <= 256):
                         raise ValidationError('Invalid email.')
 
                 def validate_password():

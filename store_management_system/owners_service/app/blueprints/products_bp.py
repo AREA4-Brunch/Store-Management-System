@@ -1,4 +1,5 @@
 import csv
+import gc  # for releasing memory when parsing file
 from flask import (
     Blueprint,
     request as flask_request,
@@ -6,16 +7,20 @@ from flask import (
     jsonify,
 )
 from flask_sqlalchemy import SQLAlchemy
-from std_authentication.decorators import roles_required_login
+from std_authentication.decorators import roles_required_login, \
+                                          login_required, roles_present
 from ..models import Product, ProductCategory, IsInCategory
 
 
 
-PRODUCTS_BP = Blueprint('products', __name__)
+PRODUCTS_BP = Blueprint( 'products', __name__ )
 
 
 @PRODUCTS_BP.route('/update', methods=['POST'])
-@roles_required_login(['owner'])
+@roles_required_login(
+    ['owner'],
+    roles_response_func=lambda _: (jsonify({ 'msg': 'Missing Authorization Header' }), 401)
+)
 def add_products_batch():
     db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
@@ -38,17 +43,22 @@ def add_products_batch():
         def check_missing_fields():
             for field_name, field_val in form_fields.items():
                 if field_val is None:
-                    raise FieldMissingError(f'Field {field_name} missing.')
+                    raise FieldMissingError(f'Field {field_name} is missing.')
 
         check_missing_fields()
         return form_fields
 
     def add_products_from_file(file):
         class InvalidPrice(Exception):
-            pass
+            PRIORITY = 1
 
         class ProductAlreadyExists(Exception):
-            pass
+            PRIORITY = 2
+
+        def update_err_priority(err_metric, new_err, new_err_proiority):
+            if err_metric is None or err_metric[0] > new_err_proiority:
+                err_metric = (new_err_proiority, new_err)
+            return err_metric
 
         def get_categories_names(line) -> set[str]:
             return set(line[0].split('|'))
@@ -95,37 +105,71 @@ def add_products_batch():
 
         # Add products row by row from given file:
 
-        reader = csv.reader(
-            file.stream.read().decode('utf-8').split('\n'),
-            delimiter=','
-        )
+        def parse_file():
+            reader = csv.reader(
+                file.stream.read().decode('utf-8').split('\n'),
+                delimiter=','
+            )
 
-        for idx, line in enumerate(reader):
-            if len(line) != 3:
-                raise ParsingError(f'Incorrect number of values on line {idx}.')
+            parsed_data = []
+            err = None
+            for idx, line in enumerate(reader):
+                if len(line) != 3:  # PRIORITY 0
+                    raise ParsingError(f'Incorrect number of values on line {idx}.')
 
+                if idx % 100 == 0:  # free up freed lines
+                    gc.collect()
+
+                try:
+                    # if err has occurred then look only for
+                    # strictly lower lvl error => no need to raise
+                    # highest lvl error (ProductAlreadyExists) and
+                    # no reason to keep going after lowest one (len(line) != 3)
+                    if err is not None:
+                        price: float = get_price(line)
+                        continue
+
+                    categories: set[str] = get_categories_names(line)
+                    name: str = get_name(line)
+                    price: float = get_price(line)
+                    parsed_data.append((categories, name, price))
+                    del line  # free memory as raw data gets replaced by parsed
+
+                except InvalidPrice as e:  # PRIORITY 1
+                    del parsed_data
+                    err = update_err_priority(
+                        err,
+                        ValidationError(f'Incorrect price on line {idx}.'),
+                        InvalidPrice.PRIORITY
+                    )
+
+                except Exception as e:
+                    del parsed_data
+                    err = update_err_priority(
+                        err,
+                        Exception(f'Unknown error while parsing line #{idx}.\n{e}'),
+                        float('inf')
+                    )
+
+            if err is not None:  # raise lowest priority error
+                raise err[1]
+            
+            return parsed_data
+
+        # create the actual product and catgory objects in db
+        for (categories, name, price) in parse_file():
             try:
-                categories: set[str] = get_categories_names(line)
-                name: str = get_name(line)
-                price: float = get_price(line)
-                
                 # create the product if it does not exist, else stop everything
                 product = create_product_if_not_exists(name, price)
 
-                # create its categories if they are new
-                categories = create_categories_if_not_exists(categories)
-
-                db.session.flush()  # make new product and new categories visible
-                add_categories_to_product(product.id, categories)
-
-            except InvalidPrice as e:
-                raise ValidationError(f'Incorrect price on line {idx}.')
-
-            except ProductAlreadyExists as e:
+            except ProductAlreadyExists as e:  # PRIORITY 2
                 raise ValidationError(f'Product {name} already exists.')
 
-            except Exception as e:
-                raise Exception(f'Unknown error while parsing line #{idx}.\n{e}')
+            # create its categories if they are new
+            categories = create_categories_if_not_exists(categories)
+
+            db.session.flush()  # make new product and new categories visible
+            add_categories_to_product(product.id, categories)
 
     try:
         form_fields = fetch_fields()
