@@ -20,7 +20,7 @@ PRODUCTS_BP = Blueprint('products', __name__)
     ['customer'],
     roles_response_func=lambda _: (jsonify({ 'msg': 'Missing Authorization Header' }), 401)
 )
-def add_products_batch():
+def search_products_and_categories():
     db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
 
@@ -87,5 +87,5 @@ def add_products_batch():
         }), 400
 
     except Exception as e:  # unexpected error
-        logger.exception(f'Failed to add products batch')
+        logger.exception(f'Failed to search products and categories')
         return f'Internal error: {e}', 500
