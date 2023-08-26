@@ -5,7 +5,8 @@ from flask_jwt_extended import (
     JWTManager,
     get_jwt,
     jwt_required,
-    verify_jwt_in_request
+    verify_jwt_in_request,
+    get_jwt_identity
 )
 from flask_jwt_extended.exceptions import NoAuthorizationError, \
                                           RevokedTokenError
@@ -102,3 +103,8 @@ class AuthenticationService:
         """
         return AuthenticationService.login_required(**kwargs) \
             or AuthenticationService.roles_required(*args[ : 1], **kwargs)
+
+    @staticmethod
+    def get_user_identifier_from_jwt_header():
+        email = get_jwt_identity()
+        return email

@@ -28,7 +28,8 @@ class CommandsConfiguration(CustomConfigDecoratorBase):
     _COMMANDS_TO_BIND_PATH = (
         store_management_db.init,
         store_management_db.upgrade_and_populate,
-        store_management_db.drop_db
+        store_management_db.drop_db,
+        store_management_db.drop_upgrade_populate
     )
 
 

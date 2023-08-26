@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='std-authentication',
-    version='0.2.0',  # MAJOR.MINOR.PATCH format
+    version='0.3.0',  # MAJOR.MINOR.PATCH format
     packages=find_packages(),
     description="User authentication and role-based access control checks and their setup, shared among services relying on the store's `user_management_system`.",
     author='Sale',

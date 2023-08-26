@@ -1,5 +1,5 @@
 import requests
-import os
+from auth import send_register_customer
 
 
 BASE_AUTH = "http://127.0.0.1:5000"
@@ -8,7 +8,8 @@ BASE_CUSTOMERS = "http://127.0.0.1:5002"
 
 
 def main():
-    test1()
+    # test1()
+    test2()
 
     return
 
@@ -76,7 +77,7 @@ def search(access_token, product_name, category_name):
     search_str = f'/search?name={product_name}&category={category_name}'
     print(f'\n\nSearching: {search_str}')
 
-    response = requests.post(
+    response = requests.get(
         url=BASE_CUSTOMERS + search_str,
         data=payload,
         headers=headers,
@@ -89,6 +90,37 @@ def search(access_token, product_name, category_name):
 
     return
 
+
+
+def test2():
+    send_register_customer()
+    access_token = send_login_customer()
+    print(f'Access token for customer: {access_token}')
+
+    payload = {
+        'id': 1
+    }
+
+    files = {
+    }
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+
+
+    response = requests.post(
+        url=BASE_CUSTOMERS + '/delivered',
+        json=payload,
+        headers=headers,
+        files=files
+    )
+
+    print(response)
+    print(response.text)
+    # print(response.json())
+
+    return
 
 
 

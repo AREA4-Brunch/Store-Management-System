@@ -1,6 +1,4 @@
-import csv
 from flask import (
-    Blueprint,
     request as flask_request,
     current_app,
     jsonify,
@@ -8,11 +6,8 @@ from flask import (
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 from std_authentication.decorators import roles_required_login
-from ..models import Product, ProductCategory
-
-
-
-PRODUCTS_BP = Blueprint('products', __name__)
+from ...models import Product, ProductCategory
+from . import PRODUCTS_BP
 
 
 @PRODUCTS_BP.route('/search', methods=['GET'])

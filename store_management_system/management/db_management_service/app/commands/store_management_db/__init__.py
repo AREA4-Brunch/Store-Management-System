@@ -9,3 +9,7 @@ from .upgrade_populate import (
 from .drop_db import (
     store_management_db_drop_db as drop_db
 )
+
+from .drop_upgrade_poplate import (
+    store_management_db_drop_upgrade_populate as drop_upgrade_populate
+)

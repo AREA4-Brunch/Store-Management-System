@@ -8,12 +8,14 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 def create_models(db: SQLAlchemy) -> dict:
-    class ContainsOrderProduct(db.Model):
-        __tablename__ = 'contains_orders_products'
+    class OrderItem(db.Model):
+        __tablename__ = 'orders_items'
 
         id = db.Column(db.Integer, primary_key=True)
         id_product = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
         id_order = db.Column(db.BigInteger, db.ForeignKey('orders.id'), nullable=False)
+        quantity = db.Column(db.Integer, nullable=False)
+        price = db.Column(db.Float, nullable=False)
 
 
     class Order(db.Model):
@@ -21,15 +23,15 @@ def create_models(db: SQLAlchemy) -> dict:
 
         id = db.Column(db.BigInteger, primary_key=True)
         total_price = db.Column(db.Float, nullable=False)
-        # status values: (DELIVERED, SHIPPING, )
+        # status values: (CREATED, PENDING, COMPLETE)
         status = db.Column(db.String(16), nullable=False)
         creation_time = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now())
+        customer = db.Column(db.String(256), nullable=False)
 
-        products = db.relationship(
-            'Product',
-            secondary=ContainsOrderProduct.__table__,
-            back_populates='orders',
-            cascade=''
+        items = db.relationship(
+            'OrderItem',
+            backref='order',  # OrderItem.order
+            lazy='dynamic'
         )
 
 
@@ -62,13 +64,6 @@ def create_models(db: SQLAlchemy) -> dict:
         name = db.Column(db.String(128), nullable=False, unique=True)
         price = db.Column(db.Float, nullable=False)
 
-        orders = db.relationship(
-            'Order',
-            secondary=ContainsOrderProduct.__table__,
-            back_populates='products',
-            cascade=''
-        )
-
         categories = db.relationship(
             'ProductCategory',
             secondary=IsInCategory.__table__,
@@ -77,22 +72,14 @@ def create_models(db: SQLAlchemy) -> dict:
         )
 
 
-    class Delivering(db.Model):
-        __tablename__ = 'delivering'
-
-        id = db.Column(db.BigInteger, db.ForeignKey('orders.id'), primary_key=True, nullable=False)
-        # foreign key ???
-        id_customer = db.Column(db.Integer, nullable=False)
-
     # add all classes that should be returned and group them
     # in dictionary by their own name
     classes = [
-        ContainsOrderProduct,
+        OrderItem,
         Order,
         IsInCategory,
         ProductCategory,
         Product,
-        Delivering
     ]
 
     # return each class under its own name in dict
