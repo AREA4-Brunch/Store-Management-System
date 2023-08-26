@@ -5,3 +5,7 @@ from .init import (
 from .upgrade_populate import (
     store_management_db_upgrade_and_populate as upgrade_and_populate
 )
+
+from .drop_db import (
+    store_management_db_drop_db as drop_db
+)
