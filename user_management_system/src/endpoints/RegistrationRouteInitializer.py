@@ -1,13 +1,14 @@
-import re  # for validating email address format
-
-from flask import request as flask_request
+# from flask import request as flask_request
 from flask import jsonify
 from pymysql.err import IntegrityError as pymysql_IntegrityError
 from sqlalchemy.exc import IntegrityError as sql_alchemy_IntegrityError
 
 from ..models import User, Role, HasRole
 from .RouteInitializer import RouteInitializer
-from .utils import is_valid_email_format
+from .utils import (
+    is_valid_email_format,
+    flask_request_get_typechecked as req_get_typechecked
+)
 
 
 class RegistrationRouteInitializer(RouteInitializer):
@@ -40,10 +41,11 @@ class RegistrationRouteInitializer(RouteInitializer):
 
             def parse_registration_form():
                 data = dict({
-                    "forename": flask_request.json.get("forename", ''),
-                    "surname": flask_request.json.get("surname", ''),
-                    "email": flask_request.json.get("email", ''),
-                    "password": flask_request.json.get("password", ''),
+                    # 'forename': flask.request.json.get('forename', None)
+                    'forename': req_get_typechecked('json', str, 'forename', None),
+                    'surname':  req_get_typechecked('json', str, 'surname', None),
+                    'email':    req_get_typechecked('json', str, 'email', None),
+                    'password': req_get_typechecked('json', str, 'password', None),
                 })
 
                 # check if all required fields have been filled out
@@ -53,7 +55,6 @@ class RegistrationRouteInitializer(RouteInitializer):
                             raise ParsingError(f'Field {field_name} is missing.')
 
                 check_missing_fields()
-                # TODO: check for too long fields, > 256 chars
                 return data
 
             def validate_registration_form(data):
@@ -66,6 +67,7 @@ class RegistrationRouteInitializer(RouteInitializer):
                     if not 8 <= len(data["password"]) <= 256:
                         raise ValidationError('Invalid password.')
 
+                # TODO: check forename, surname if len > 256 chars
                 validate_email()
                 validate_password()
 

@@ -1,15 +1,17 @@
 import re
+# import logging
+from datetime import datetime, timedelta
+from typing import Type
 from redis import Redis
-
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     verify_jwt_in_request
 )
-
-from datetime import datetime, timedelta
+from flask import (
+    request as flask_request,
+)
 from ..utils import get_expiry_hour
-import logging
 
 
 def is_valid_email_format(email):
@@ -66,3 +68,18 @@ def add_jwt_to_blocklist(redis: Redis, jwt_payload: dict):
         group_ttl = int((expiry_hour_as_datetime - datetime.now())\
                         .total_seconds())
         redis.expire(blocklist_group, group_ttl)
+
+
+def flask_request_get_typechecked(
+    flask_request_attr: str,
+    type: Type,
+    *flask_req_args,
+):
+    """ Calls flask.request.flask_request_attr.get.(*flask_req_args).
+        Returns value returned by get if it is an instance of
+        given type `type`,
+        else returns None.
+    """
+    get = getattr(flask_request, flask_request_attr).get
+    res = get(*flask_req_args)
+    return res if isinstance(res, type) else None

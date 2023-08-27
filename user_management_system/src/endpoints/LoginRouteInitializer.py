@@ -4,7 +4,8 @@ from flask_jwt_extended import get_jwt_header
 
 from ..models import User
 from .RouteInitializer import RouteInitializer
-from .utils import is_valid_email_format, generate_jwts, is_logged_in
+from .utils import is_valid_email_format, generate_jwts, is_logged_in, \
+                   flask_request_get_typechecked
 
 
 class LoginRouteInitializer(RouteInitializer):
@@ -36,8 +37,9 @@ class LoginRouteInitializer(RouteInitializer):
 
             def parse_login_form():
                 data = dict({
-                    "email": flask_request.json.get("email", ''),
-                    "password": flask_request.json.get("password", ''),
+                    'email': flask_request_get_typechecked('json', str, 'email', None),
+                    'password': flask_request_get_typechecked('json', str,
+                                                              'password', None)
                 })
 
                 # check if all required fields have been filled out
