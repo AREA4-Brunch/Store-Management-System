@@ -1,17 +1,14 @@
 import csv
 from flask import (
-    Blueprint,
     request as flask_request,
     current_app,
     jsonify,
 )
 from flask_sqlalchemy import SQLAlchemy
 from std_authentication.decorators import roles_required_login
+from . import STATISTICS_BP
 from ..models import Order, Product
 
-
-
-STATISTICS_BP = Blueprint('statistics', __name__)
 
 
 # @STATISTICS_BP.route('/product_statistics', methods=['GET'])

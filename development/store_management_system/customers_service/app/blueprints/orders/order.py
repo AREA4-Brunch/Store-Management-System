@@ -8,7 +8,9 @@ from flask import (
 from flask_sqlalchemy import SQLAlchemy
 from std_authentication.decorators import roles_required_login
 from std_authentication.services import AuthenticationService
-from project_common.utils.request import flask_request_get_typechecked
+from project_common.utils.request import (
+    flask_request_get_typechecked as req_get_typechecked
+)
 from ...models import Product, Order, OrderItem
 from . import ORDERS_BP
 
@@ -37,8 +39,7 @@ def order_products():
     def fetch_fields():
         form_fields = dict({
             # 'requests': flask_request.json.get('requests', None),
-            'requests': flask_request_get_typechecked('json', list,
-                                                      'requests', None),
+            'requests': req_get_typechecked('json', list, 'requests', None),
         })
 
         # check if all required fields have been filled out

@@ -1,19 +1,15 @@
 import csv
 import gc  # for releasing memory when parsing file
 from flask import (
-    Blueprint,
     request as flask_request,
     current_app,
     jsonify,
 )
 from flask_sqlalchemy import SQLAlchemy
-from std_authentication.decorators import roles_required_login, \
-                                          login_required, roles_present
+from std_authentication.decorators import roles_required_login
+from . import PRODUCTS_BP
 from ..models import Product, ProductCategory, IsInCategory
 
-
-
-PRODUCTS_BP = Blueprint( 'products', __name__ )
 
 
 @PRODUCTS_BP.route('/update', methods=['POST'])
