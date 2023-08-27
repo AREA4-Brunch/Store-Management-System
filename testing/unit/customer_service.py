@@ -9,7 +9,8 @@ BASE_CUSTOMERS = "http://127.0.0.1:5002"
 
 def main():
     # test1()
-    test2()
+    # test2()
+    test3()
 
     return
 
@@ -111,6 +112,46 @@ def test2():
 
     response = requests.post(
         url=BASE_CUSTOMERS + '/delivered',
+        json=payload,
+        headers=headers,
+        files=files
+    )
+
+    print(response)
+    print(response.text)
+    # print(response.json())
+
+    return
+
+
+
+
+def test3():
+    print(f'hi: { isinstance(None, int) }')
+    
+    send_register_customer()
+    access_token = send_login_customer()
+    print(f'Access token for customer: {access_token}')
+
+    payload = {
+        'requests': [
+            {
+                'id': 12.2,
+                'quantity': 17
+            }
+        ]
+    }
+
+    files = {
+    }
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+
+
+    response = requests.post(
+        url=BASE_CUSTOMERS + '/order',
         json=payload,
         headers=headers,
         files=files

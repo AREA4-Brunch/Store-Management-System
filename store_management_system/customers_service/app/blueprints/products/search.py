@@ -16,11 +16,8 @@ from . import PRODUCTS_BP
     roles_response_func=lambda _: (jsonify({ 'msg': 'Missing Authorization Header' }), 401)
 )
 def search_products_and_categories():
-    db: SQLAlchemy = current_app.container.services.db_store_management()
+    # db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
-
-    class FieldMissingError(Exception):
-        pass
 
     def fetch_fields():
         form_fields = dict({
@@ -75,11 +72,6 @@ def search_products_and_categories():
             'categories': categories,
             'products': products
         }), 200  # successfully queried
-
-    except FieldMissingError as e:
-        return jsonify({
-            "message": f'{e}'
-        }), 400
 
     except Exception as e:  # unexpected error
         logger.exception(f'Failed to search products and categories')

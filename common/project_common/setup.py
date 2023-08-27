@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='project-common',
-    version='0.1.0',  # MAJOR.MINOR.PATCH format
+    version='0.2.0',  # MAJOR.MINOR.PATCH format
     packages=find_packages(),
     description="Common utilities and pieces of code across the project.",
     author='Sale',

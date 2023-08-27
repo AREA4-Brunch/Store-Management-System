@@ -36,9 +36,7 @@ def mark_order_completed():
         if id is None:
             raise FieldMissingError(f'Missing order id.')
 
-        try:  # convert to int
-            id = int(id)
-        except Exception:
+        if not isinstance(id, int):
             raise ParsingError(f'Invalid order id.')
 
         if id <= 0:

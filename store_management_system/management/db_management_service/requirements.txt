@@ -1,4 +1,4 @@
-./libs/project-common-0.1.0.tar.gz
+./libs/project-common-0.2.0.tar.gz
 ./libs/flask-app-extended-1.1.0.tar.gz
 ./libs/db-store-management-1.1.0.tar.gz
 alembic==1.11.3

@@ -1,13 +1,14 @@
 import gc
 from typing import Any
 from flask import (
-    request as flask_request,
+    # request as flask_request,
     current_app,
     jsonify,
 )
 from flask_sqlalchemy import SQLAlchemy
 from std_authentication.decorators import roles_required_login
 from std_authentication.services import AuthenticationService
+from project_common.utils.request import flask_request_get_typechecked
 from ...models import Product, Order, OrderItem
 from . import ORDERS_BP
 
@@ -35,7 +36,9 @@ def order_products():
 
     def fetch_fields():
         form_fields = dict({
-            'requests': flask_request.json.get('requests', None),
+            # 'requests': flask_request.json.get('requests', None),
+            'requests': flask_request_get_typechecked('json', list,
+                                                      'requests', None),
         })
 
         # check if all required fields have been filled out
@@ -106,19 +109,15 @@ def order_products():
 
             return id, quantity
 
-        def validate_id(id: str, request_idx: int):
-            try:
-                id = int(id)
-            except Exception:
+        def validate_id(id, request_idx: int):
+            if not isinstance(id, int):
                 raise InvalidId(request_idx)
 
             if id <= 0:
                 raise InvalidId(request_idx)
 
-        def validate_quantity(quantity: str, request_idx: int):
-            try:
-                quantity = int(quantity)
-            except Exception:
+        def validate_quantity(quantity, request_idx: int):
+            if not isinstance(quantity, int):
                 raise InvalidQuantity(request_idx)
 
             if quantity <= 0:
