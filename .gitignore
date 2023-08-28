@@ -4,3 +4,6 @@
 **/dump.rdb
 **/tmp.py
 **/__secrets.py
+
+# mysql databases stored data
+/development/user_management_system/databases/user_management/data

@@ -1,0 +1,28 @@
+version: 3.8
+
+services:
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+  db_user_management:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=etf
+    ports:
+      - 3306:3306
+    volumes:
+      -
+
+  user_management:
+    build:
+      context: ../development/user_management_system
+      dockerfile: ../development/user_management_system/Dockerfile
+    ports:
+      - 5000:5000
+    depends_on:
+      - db_user_management
+    environment:
+      - DB_USER_MANAGEMENT_URI=value
