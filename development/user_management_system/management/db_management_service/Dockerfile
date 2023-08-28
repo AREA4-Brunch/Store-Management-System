@@ -15,6 +15,4 @@ RUN pip install -r ./requirements.txt
 COPY ./manage.py ./manage.py
 COPY ./app ./app
 
-
-# ENTRYPOINT [ "python", "manage.py", "run", '--host="0.0.0.0"', "--port=5000", "--debug" ]
-ENTRYPOINT [ "python", 'manage.py run --host="0.0.0.0" --port=5000 --debug' ]
+ENTRYPOINT [ "python", "manage.py", "user_management_db_init" ]

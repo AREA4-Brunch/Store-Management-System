@@ -1,7 +1,7 @@
 import flask
 
 
-ORDERS_BP = flask.Blueprint('orders', __name__)
+PRODUCTS_BP = flask.Blueprint('orders', __name__)
 
 # Bind the ORDERS_BP endpoints
 from . import (

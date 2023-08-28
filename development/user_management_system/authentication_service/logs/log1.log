@@ -1,287 +1,167 @@
-2023-08-02 16:23:31,759 - src.apps - ERROR - blocklist_group: jwt_blk:exp=2023-08-02T18,                 group_ttl: 5788, expiry_hour: 2023-08-02T18
-2023-08-02 16:23:31,807 - src.apps - ERROR - blocklist_group: jwt_blk:exp=2023-08-02T18,                 group_ttl: 5788, expiry_hour: 2023-08-02T18
-2023-08-20 20:59:53,798 - src.apps - ERROR - Failed to login
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:00:48,042 - src.apps - ERROR - Failed to login
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 614, in get_json
-    rv = self.json_module.loads(data)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/json/provider.py", line 188, in loads
-    return json.loads(s, **kwargs)
-  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
-    return _default_decoder.decode(s)
-  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2023-08-28 22:53:35 [INFO] Configured app logging, linked to file:
+./logs/log1.log
 
-During handling of the above exception, another exception occurred:
+2023-08-28 22:53:36 [INFO] Configured app logging, linked to file:
+./logs/log1.log
 
+2023-08-29 00:20:35 [ERROR] Failed to delete user
 Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 623, in get_json
-    rv = self.on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 648, in on_json_loading_failed
-    raise BadRequest(f"Failed to decode JSON object: {e}")
-werkzeug.exceptions.BadRequest: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)
-2023-08-20 21:03:55,620 - src.apps - ERROR - Failed to login
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/delete.py", line 50, in delete_user
+    user = User.filter_by(email=data['email']) \
+AttributeError: type object 'User' has no attribute 'filter_by'
+2023-08-29 00:20:35 [ERROR] Failed to delete user
 Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 614, in get_json
-    rv = self.json_module.loads(data)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/json/provider.py", line 188, in loads
-    return json.loads(s, **kwargs)
-  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
-    return _default_decoder.decode(s)
-  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/delete.py", line 50, in delete_user
+    user = User.filter_by(email=data['email']) \
+AttributeError: type object 'User' has no attribute 'filter_by'
+2023-08-29 00:20:35 [ERROR] Failed to delete user
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/delete.py", line 50, in delete_user
+    user = User.filter_by(email=data['email']) \
+AttributeError: type object 'User' has no attribute 'filter_by'
+2023-08-29 00:20:35 [ERROR] Failed to delete user
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/delete.py", line 50, in delete_user
+    user = User.filter_by(email=data['email']) \
+AttributeError: type object 'User' has no attribute 'filter_by'
+2023-08-29 00:21:56 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:21:56 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:21:56 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:21:56 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:21:56 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:21:57 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:22:30 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:22:31 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:22:31 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:22:31 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:22:31 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:22:31 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:23:47 [INFO] Configured app logging, linked to file:
+./logs/log1.log
 
-During handling of the above exception, another exception occurred:
+2023-08-29 00:24:13 [INFO] Configured app logging, linked to file:
+./logs/log1.log
 
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 623, in get_json
-    rv = self.on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 648, in on_json_loading_failed
-    raise BadRequest(f"Failed to decode JSON object: {e}")
-werkzeug.exceptions.BadRequest: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)
-2023-08-20 21:04:12,592 - src.apps - ERROR - Failed to login
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:05:05,471 - src.apps - ERROR - Failed to login
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 614, in get_json
-    rv = self.json_module.loads(data)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/json/provider.py", line 188, in loads
-    return json.loads(s, **kwargs)
-  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
-    return _default_decoder.decode(s)
-  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2023-08-29 00:24:14 [INFO] Configured app logging, linked to file:
+./logs/log1.log
 
-During handling of the above exception, another exception occurred:
+2023-08-29 00:24:25 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:24:25 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:24:25 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:24:25 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:24:25 [ERROR] Failed to register courier
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:24:25 [ERROR] Failed to register customer
+Traceback (most recent call last):
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 100, in register_user_view
+    raise e
+  File "/home/sale/projects/coursework/iep_project/store_management_system/development/user_management_system/authentication_service/app/blueprints/register.py", line 94, in register_user_view
+    has_role = HasRole(user_id=user.id, role_id=role.id)
+AttributeError: 'NoneType' object has no attribute 'id'
+2023-08-29 00:34:28 [INFO] Configured app logging, linked to file:
+./logs/log1.log
 
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 623, in get_json
-    rv = self.on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 648, in on_json_loading_failed
-    raise BadRequest(f"Failed to decode JSON object: {e}")
-werkzeug.exceptions.BadRequest: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)
-2023-08-20 21:05:37,260 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:05:37,264 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:05:37,269 - src.apps - ERROR - Failed to login
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:10:43,308 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:10:43,312 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:10:43,316 - src.apps - ERROR - Failed to login
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:12:07,367 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:12:07,372 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:12:07,377 - src.apps - ERROR - Failed to login
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 73, in login_user_view
-    data = parse_login_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/LoginRouteInitializer.py", line 39, in parse_login_form
-    "email": flask_request.json.get("email", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:12:21,920 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
-2023-08-20 21:12:21,925 - src.apps - ERROR - Failed to register customer
-Traceback (most recent call last):
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 72, in register_user_view
-    data = parse_registration_form()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/src/endpoints/RegistrationRouteInitializer.py", line 43, in parse_registration_form
-    "forename": flask_request.json.get("forename", ''),
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 561, in json
-    return self.get_json()
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 607, in get_json
-    return self.on_json_loading_failed(None)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/flask/wrappers.py", line 130, in on_json_loading_failed
-    return super().on_json_loading_failed(e)
-  File "/home/sale/projects/coursework/iep_project/store_management_system/user_management_system/venv/lib/python3.10/site-packages/werkzeug/wrappers/request.py", line 650, in on_json_loading_failed
-    raise UnsupportedMediaType(
-werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
+2023-08-29 00:34:29 [INFO] Configured app logging, linked to file:
+./logs/log1.log
+

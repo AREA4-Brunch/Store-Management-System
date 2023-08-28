@@ -1,12 +1,18 @@
 import logging
+import os
 from flask_app_extended.config import (
     CustomConfigBase,
     CustomConfigDecoratorBase,
     DefaultConfigFactory,
 )
-from .commands import store_management_db
-from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env variables
+from .commands import user_management_db
+from .__secrets import USER_MANAGEMENT_DB
 
+
+DB_USER_MANAGEMENT_URI = os.environ.get(
+    'DB_USER_MANAGEMENT_URI',
+    f"mysql+pymysql://root:{USER_MANAGEMENT_DB['pwd']}@localhost/authentication"
+)
 
 
 # ========================================================
@@ -17,17 +23,17 @@ from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env 
 class FlaskAppConfig(CustomConfigBase):
     LOGGING_LEVEL = logging.DEBUG
 
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/store_management"
+    SQLALCHEMY_DATABASE_URI = DB_USER_MANAGEMENT_URI
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 
 class CommandsConfiguration(CustomConfigDecoratorBase):
     _COMMANDS_TO_BIND_PATH = (
-        store_management_db.init,
-        store_management_db.upgrade_and_populate,
-        store_management_db.drop_db,
-        store_management_db.drop_upgrade_populate
+        user_management_db.init,
+        user_management_db.upgrade_and_populate,
+        user_management_db.drop_db,
+        user_management_db.drop_upgrade_populate
     )
 
 

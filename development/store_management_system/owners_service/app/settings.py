@@ -18,8 +18,6 @@ from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env 
 
 
 class FlaskAppConfig(CustomConfigBase):
-    DEBUG = True
-
     LOGGING_LEVEL = logging.DEBUG
 
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/store_management"

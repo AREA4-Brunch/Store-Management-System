@@ -1,4 +1,9 @@
-version: 3.8
+version: '3.8'
+
+
+x-usr-mng-db-env: &usr_mng_db_env
+  DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@localhost/authentication
+
 
 services:
 
@@ -7,22 +12,61 @@ services:
     ports:
       - 8080:8080
 
-  db_user_management:
+  blocklist-redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  db-user-management:
     image: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=etf
     ports:
       - 3306:3306
     volumes:
-      -
+      - type: bind
+        source: ./databases/user_management/data
+        target: /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
-  user_management:
+  management-db-user-management:
     build:
-      context: ../development/user_management_system
-      dockerfile: ../development/user_management_system/Dockerfile
+      context: ../development/user_management_system/management/db_management_service
+      dockerfile: ./Dockerfile
+    ports:
+      - 5004:5000
+    depends_on:
+      - db-user-management
+    environment:
+      - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
+      - PATH_LOGGING_DIR=./logs/
+    volumes:
+      - type: bind
+        source: ../development/user_management_system/management/db_management_service/logs/
+        target: /usr/service/logs/
+      - type: bind
+        source: ../development/user_management_system/management/db_management_service/migrations/
+        target: /usr/service/migrations/
+
+  authentication:
+    build:
+      context: ../development/user_management_system/authentication_service
+      dockerfile: ./Dockerfile
     ports:
       - 5000:5000
     depends_on:
-      - db_user_management
+      - management-db-user-management
+      - blocklist-redis
     environment:
-      - DB_USER_MANAGEMENT_URI=value
+      - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
+      - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+    volumes:
+      - type: bind
+        source: ../development/user_management_system/authentication_service/logs/
+        target: /usr/service/logs/
+
