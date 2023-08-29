@@ -1,8 +1,8 @@
 version: '3.8'
 
 
-x-usr-mng-db-env: &usr_mng_db_env
-  DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@localhost/authentication
+# x-usr-mng-db-env: &usr_mng_db_env
+#   DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management/authentication
 
 
 services:
@@ -16,6 +16,12 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
   db-user-management:
     image: mysql
@@ -34,24 +40,26 @@ services:
       retries: 10
       start_period: 5s
 
-  management-db-user-management:
+  migration-db-user-management:
     build:
       context: ../development/user_management_system/management/db_management_service
       dockerfile: ./Dockerfile
     ports:
       - 5004:5000
     depends_on:
-      - db-user-management
+      db-user-management:
+        condition: service_healthy
     environment:
-      - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
+      # - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
+      - DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management/authentication
       - PATH_LOGGING_DIR=./logs/
     volumes:
       - type: bind
-        source: ../development/user_management_system/management/db_management_service/logs/
+        source: ./logs/user_management_system/db_management_service
         target: /usr/service/logs/
-      - type: bind
-        source: ../development/user_management_system/management/db_management_service/migrations/
-        target: /usr/service/migrations/
+      # - type: bind
+      #   source: ./databases/user_management/migrations
+      #   target: /usr/service/migrations/
 
   authentication:
     build:
@@ -60,13 +68,16 @@ services:
     ports:
       - 5000:5000
     depends_on:
-      - management-db-user-management
-      - blocklist-redis
+      migration-db-user-management:
+        condition: service_completed_successfully
+      blocklist-redis:
+        condition: service_healthy
     environment:
-      - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
+      # - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
+      - DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management/authentication
       - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
     volumes:
       - type: bind
-        source: ../development/user_management_system/authentication_service/logs/
+        source: ./logs/user_management_system/authentication_service
         target: /usr/service/logs/
 

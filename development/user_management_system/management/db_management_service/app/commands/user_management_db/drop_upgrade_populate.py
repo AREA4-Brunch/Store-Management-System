@@ -4,9 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import (
     database_exists, create_database, drop_database
 )
-from flask_migrate import init, migrate, upgrade
-from ...scripts.populate import populate
-
+from ...scripts import (
+    populate,
+    update_db_structure,
+    create_db_if_not_exists
+)
 
 
 @click.command('user_management_db_drop_upgrade_populate')
@@ -16,15 +18,6 @@ def user_management_db_drop_upgrade_populate():
 
     uri = current_app.config['SQLALCHEMY_DATABASE_URI']
 
-    def create_db_if_not_exists(uri):
-        if not database_exists(uri):
-            create_database(uri)
-        db.create_all()
-
-    def update_db_structure():
-        migrate(message='Production Migration; user_management_db_drop_upgrade_populate')
-        upgrade()
-
     with current_app.app_context() as context:
         # if already non existant just return
         if not database_exists(uri):
@@ -33,6 +26,6 @@ def user_management_db_drop_upgrade_populate():
         # drop the entire database
         drop_database(uri)
 
-        create_db_if_not_exists(uri)
+        create_db_if_not_exists(uri, db)
         update_db_structure()
         populate(db)

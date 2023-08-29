@@ -4,6 +4,7 @@
 alembic==1.11.3
 blinker==1.6.2
 click==8.1.7
+cryptography==41.0.3
 dependency-injector==4.41.0
 Flask==2.3.2
 Flask-Migrate==2.7.0

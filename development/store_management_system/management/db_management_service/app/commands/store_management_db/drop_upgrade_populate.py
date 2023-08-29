@@ -2,10 +2,12 @@ import click
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import (
-    database_exists, create_database, drop_database
+    database_exists, drop_database
 )
-from flask_migrate import init, migrate, upgrade
-
+from ...scripts import (
+    create_db_if_not_exists,
+    update_db_structure
+)
 
 
 @click.command('store_management_db_drop_upgrade_populate')
@@ -15,14 +17,6 @@ def store_management_db_drop_upgrade_populate():
 
     uri = current_app.config['SQLALCHEMY_DATABASE_URI']
 
-    def create_db_if_not_exists(uri):
-        if not database_exists(uri):
-            create_database(uri)
-        db.create_all()
-
-    def update_db_structure():
-        migrate(message='Production Migration; store_management_db_drop_upgrade_populate')
-        upgrade()
 
     with current_app.app_context() as context:
         # if already non existant just return
@@ -32,5 +26,5 @@ def store_management_db_drop_upgrade_populate():
         # drop the entire database
         drop_database(uri)
 
-        create_db_if_not_exists(uri)
+        create_db_if_not_exists(uri, db)
         update_db_structure()
