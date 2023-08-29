@@ -1,10 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
+from ..models import User, Role, HasRole
 
 
 
 def populate(db: SQLAlchemy):
-    from ..models import User, Role, HasRole
-
     def populate_roles():
         # populate what does not already exist:
         # with app.app_context():

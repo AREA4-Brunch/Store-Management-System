@@ -1,9 +1,6 @@
-import os
 import click
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_utils import database_exists, create_database
-from flask_migrate import init, migrate, upgrade
 from ...scripts import populate, update_db_structure, create_db_if_not_exists
 
 
@@ -22,4 +19,3 @@ def user_management_db_init():
 
         update_db_structure()
         populate(db)
-

@@ -5,12 +5,20 @@ version: '3.8'
 #   DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management/authentication
 
 
+networks:
+  usr-mng-sys-net:
+  store-mng-sys-net:
+  shared-blocklist-net:
+
+
 services:
 
   adminer:
     image: adminer
     ports:
       - 8080:8080
+    networks:
+      - usr-mng-sys-net
 
   blocklist-redis:
     image: redis:alpine
@@ -22,6 +30,8 @@ services:
       timeout: 5s
       retries: 10
       start_period: 5s
+    networks:
+      - shared-blocklist-net
 
   db-user-management:
     image: mysql
@@ -39,6 +49,8 @@ services:
       timeout: 5s
       retries: 10
       start_period: 5s
+    networks:
+      - usr-mng-sys-net
 
   migration-db-user-management:
     build:
@@ -53,6 +65,7 @@ services:
       # - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
       - DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management/authentication
       - PATH_LOGGING_DIR=./logs/
+      - LOGGING_LEVEL=DEBUG
     volumes:
       - type: bind
         source: ./logs/user_management_system/db_management_service
@@ -60,6 +73,8 @@ services:
       # - type: bind
       #   source: ./databases/user_management/migrations
       #   target: /usr/service/migrations/
+    networks:
+      - usr-mng-sys-net
 
   authentication:
     build:
@@ -76,8 +91,14 @@ services:
       # - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
       - DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management/authentication
       - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+      - REDIS_BLOCKLIST_HOST=blocklist-redis
+      - REDIS_BLOCKLIST_PORT=6379
+      - REDIS_BLOCKLIST_DB=0
+      - LOGGING_LEVEL=DEBUG
     volumes:
       - type: bind
         source: ./logs/user_management_system/authentication_service
         target: /usr/service/logs/
-
+    networks:
+      - usr-mng-sys-net
+      - shared-blocklist-net

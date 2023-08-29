@@ -13,6 +13,6 @@ setup(
     install_requires=[
         "Flask==2.3.2",
         "dependency-injector==4.41.0",
-        "flask_app_extended==1.1.0",
+        "flask_app_extended>=1.1.0",
     ],
 )

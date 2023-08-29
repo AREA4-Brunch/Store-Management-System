@@ -209,9 +209,11 @@ def order_products():
 
     try:
         form_fields = fetch_fields()
-        order: Order = create_order(form_fields['requests'])
 
         try:
+            # create_order locks products and in case of error
+            # rollback will release
+            order: Order = create_order(form_fields['requests'])
             db.session.add(order)
             db.session.commit()
 

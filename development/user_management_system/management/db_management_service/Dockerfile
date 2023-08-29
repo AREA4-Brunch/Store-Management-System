@@ -18,5 +18,8 @@ COPY ./app ./app
 
 RUN rm -rf ./migrations
 
-# ENTRYPOINT [ "python", "manage.py", "user_management_db_init" ]
-ENTRYPOINT [ "python", "manage.py", "user_management_db_drop_upgrade_populate" ]
+ENTRYPOINT [ "python", "manage.py", "user_management_db_init" ]
+# ENTRYPOINT [ "python", "manage.py", "user_management_db_drop_upgrade_populate" ]
+
+# for production / preserving data, does same as: user_management_db_init
+# user_management_db_upgrade_and_populate

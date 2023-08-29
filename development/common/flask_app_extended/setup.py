@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flask-app-extended',
-    version='1.1.0',  # MAJOR.MINOR.PATCH format
+    version='1.1.1',  # MAJOR.MINOR.PATCH format
     packages=find_packages(),
     description="Library for creating a flask.Flask object and managing configurations.",
     author='Sale',

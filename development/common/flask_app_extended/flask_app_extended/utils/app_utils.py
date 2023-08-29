@@ -84,10 +84,11 @@ class DefaultFlaskAppInitializer:
         """ commands can be an iterable containing
             command functions or such nested iterables.
         """
-        # if commands is not provided load in from
-        # selected configuration class
+        # if commands is not provided load in from selected
+        # configuration class's callable that provides it
         if commands is None:
-            commands = self._config.get_all('_COMMANDS_TO_BIND_PATH')
+            commands_providers = self._config.get_all('_COMMANDS_TO_BIND_PROVIDER')
+            commands = [ provider() for provider in commands_providers ]
 
         def process_commands(
             command_or_list: Union[Callable, Iterable]

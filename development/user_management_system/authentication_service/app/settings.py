@@ -18,8 +18,11 @@ DB_USER_MANAGEMENT_URI = os.environ.get(
     f"mysql+pymysql://root:{USER_MANAGEMENT_DB['pwd']}@localhost/authentication"
 )
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'JWT_SECRET_DEV_KEY')
+REDIS_BLOCKLIST_HOST = os.environ.get('REDIS_BLOCKLIST_HOST', '127.0.0.1')
+REDIS_BLOCKLIST_PORT = int(os.environ.get('REDIS_BLOCKLIST_PORT', 6379))
+REDIS_BLOCKLIST_DB = int(os.environ.get('REDIS_BLOCKLIST_DB', 0))
 PATH_LOGGING_DIR = os.environ.get('PATH_LOGGING_DIR', './logs/')
-
+LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
 
 
 
@@ -29,7 +32,7 @@ PATH_LOGGING_DIR = os.environ.get('PATH_LOGGING_DIR', './logs/')
 
 
 class FlaskAppConfig(CustomConfigBase):
-    LOGGING_LEVEL = logging.DEBUG
+    LOGGING_LEVEL = getattr(logging, LOGGING_LEVEL)
 
     SQLALCHEMY_DATABASE_URI = DB_USER_MANAGEMENT_URI
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -53,9 +56,9 @@ class FileLoggerConfig(DefaultFlaskAppLoggerConfig):
 
 
 class RedisAuthorizationConfig(CustomConfigBase):
-    HOST = '127.0.0.1'
-    PORT = 6379
-    DB = 0
+    HOST = REDIS_BLOCKLIST_HOST
+    PORT = REDIS_BLOCKLIST_PORT
+    DB = REDIS_BLOCKLIST_DB
     DECODE_RESPONSES = True
 
 
