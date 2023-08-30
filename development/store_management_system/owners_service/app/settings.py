@@ -12,17 +12,31 @@ from flask_app_extended.utils.config_utils import (
 from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env variables
 
 
+
+# ========================================================
+# For deployment load from environment, defaults are for local run
+
+
+
 DB_STORE_MANAGEMENT_URI = os.environ.get(
     'DB_STORE_MANAGEMENT_URI',
     f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/store_management"
 )
+
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'JWT_SECRET_DEV_KEY')
+
 REDIS_BLOCKLIST_HOST = os.environ.get('REDIS_BLOCKLIST_HOST', '127.0.0.1')
 REDIS_BLOCKLIST_PORT = int(os.environ.get('REDIS_BLOCKLIST_PORT', 6379))
 REDIS_BLOCKLIST_DB = int(os.environ.get('REDIS_BLOCKLIST_DB', 0))
+
 PATH_LOGGING_DIR = os.environ.get('PATH_LOGGING_DIR', './logs/')
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
 
+PATH_PYSPARK_MYSQL_CONNECTOR_JAR = os.environ.get(
+    'PATH_PYSPARK_MYSQL_CONNECTOR_JAR',
+    './libs/mysql-connector-j-8.0.33.jar'
+)
+PYSPARK_MASTER_URL = os.environ.get('PYSPARK_MASTER_URL', 'local[*]')
 
 
 # ========================================================
@@ -48,6 +62,10 @@ class FileLoggerConfig(DefaultFlaskAppLoggerConfig):
     LOG_FILE_PATH = os.path.join(PATH_LOGGING_DIR, 'log1.log')
 
 
+class PySparkConfig(CustomConfigBase):
+    PATH_FILE_MYSQL_CONNECTOR_JAR = PATH_PYSPARK_MYSQL_CONNECTOR_JAR
+    MASTER_URL = PYSPARK_MASTER_URL
+
 
 
 # ========================================================
@@ -58,7 +76,7 @@ class FileLoggerConfig(DefaultFlaskAppLoggerConfig):
 class RedisAuthorizationConfig(CustomConfigBase):
     HOST = REDIS_BLOCKLIST_HOST
     PORT = REDIS_BLOCKLIST_PORT
-    DB = REDIS_BLOCKLIST_DB
+    DB   = REDIS_BLOCKLIST_DB
     DECODE_RESPONSES = True
 
 
@@ -81,6 +99,8 @@ class CoreConfiguration(CustomConfigDecoratorBase):
         FileLoggerConfig,
         DefaultURLBlueprintsConfig,
     ]).create_config()
+
+    pyspark = PySparkConfig()
 
 
 class GatewaysConfiguration(CustomConfigDecoratorBase):

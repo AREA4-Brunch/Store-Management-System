@@ -13,12 +13,19 @@ networks:
 
 services:
 
+
+  # =====================================================================================
+  # SHARED
+  # =====================================================================================
+
+
   adminer:
     image: adminer
     ports:
       - 8080:8080
     networks:
       - usr-mng-sys-net
+      - store-mng-sys-net
 
   blocklist-redis:
     image: redis:alpine
@@ -32,6 +39,12 @@ services:
       start_period: 5s
     networks:
       - shared-blocklist-net
+
+
+  # =====================================================================================
+  # USER MANAGEMENT SYSTEM
+  # =====================================================================================
+
 
   db-user-management:
     image: mysql
@@ -101,4 +114,134 @@ services:
         target: /usr/service/logs/
     networks:
       - usr-mng-sys-net
+      - shared-blocklist-net
+
+
+  # =====================================================================================
+  # STORE MANAGEMENT SYSTEM
+  # =====================================================================================
+
+
+  db-store-management:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=etf
+    ports:
+      - 3307:3306
+    volumes:
+      - type: bind
+        source: ./databases/store_management/data
+        target: /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - store-mng-sys-net
+
+  migration-db-store-management:
+    build:
+      context: ../development/store_management_system/management/db_management_service
+      dockerfile: ./Dockerfile
+    ports:
+      - 5005:5000
+    depends_on:
+      db-store-management:
+        condition: service_healthy
+    environment:
+      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management/store_management
+      - PATH_LOGGING_DIR=./logs/
+      - LOGGING_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./logs/store_management_system/db_management_service
+        target: /usr/service/logs/
+      # - type: bind
+      #   source: ./databases/store_management/migrations
+      #   target: /usr/service/migrations/
+    networks:
+      - store-mng-sys-net
+
+  owners-service:
+    build:
+      context: ../development/store_management_system/owners_service
+      dockerfile: ./Dockerfile
+    ports:
+      - 5001:5000
+    depends_on:
+      migration-db-store-management:
+        condition: service_completed_successfully
+      blocklist-redis:
+        condition: service_healthy
+    environment:
+      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management/store_management
+      - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+      - REDIS_BLOCKLIST_HOST=blocklist-redis
+      - REDIS_BLOCKLIST_PORT=6379
+      - REDIS_BLOCKLIST_DB=0
+      - LOGGING_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./logs/store_management_system/owners_service
+        target: /usr/service/logs/
+    networks:
+      - store-mng-sys-net
+      - shared-blocklist-net
+
+  customers-service:
+    build:
+      context: ../development/store_management_system/customers_service
+      dockerfile: ./Dockerfile
+    ports:
+      - 5002:5000
+    depends_on:
+      migration-db-store-management:
+        condition: service_completed_successfully
+      blocklist-redis:
+        condition: service_healthy
+    environment:
+      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management/store_management
+      - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+      - REDIS_BLOCKLIST_HOST=blocklist-redis
+      - REDIS_BLOCKLIST_PORT=6379
+      - REDIS_BLOCKLIST_DB=0
+      - LOGGING_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./logs/store_management_system/customers_service
+        target: /usr/service/logs/
+    networks:
+      - store-mng-sys-net
+      - shared-blocklist-net
+
+  couriers-service:
+    build:
+      context: ../development/store_management_system/couriers_service
+      dockerfile: ./Dockerfile
+    ports:
+      - 5003:5000
+    depends_on:
+      migration-db-store-management:
+        condition: service_completed_successfully
+      blocklist-redis:
+        condition: service_healthy
+    environment:
+      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management/store_management
+      - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+      - REDIS_BLOCKLIST_HOST=blocklist-redis
+      - REDIS_BLOCKLIST_PORT=6379
+      - REDIS_BLOCKLIST_DB=0
+      - LOGGING_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./logs/store_management_system/couriers_service
+        target: /usr/service/logs/
+    networks:
+      - store-mng-sys-net
       - shared-blocklist-net

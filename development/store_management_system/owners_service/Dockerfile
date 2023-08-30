@@ -1,0 +1,21 @@
+FROM python:3-alpine
+
+RUN mkdir -p /usr/service
+WORKDIR /usr/service
+
+# enable running python manage.py without specifying
+# manage.py location
+ENV PYTHONPATH .
+
+# install dependencies
+COPY ./libs ./libs
+COPY ./requirements.txt ./requirements.txt
+
+RUN pip install -r ./requirements.txt
+
+# run the app
+COPY ./manage.py ./manage.py
+COPY ./app ./app
+
+
+ENTRYPOINT [ "python", "manage.py", "run", "--host=0.0.0.0", "--port=5000", "--debug" ]

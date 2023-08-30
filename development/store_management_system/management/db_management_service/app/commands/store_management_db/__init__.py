@@ -3,7 +3,7 @@ from .init import (
 )
 
 from .upgrade_populate import (
-    store_management_db_upgrade_and_populate as upgrade_and_populate
+    store_management_db_upgrade_populate as upgrade_and_populate
 )
 
 from .drop_db import (

@@ -13,7 +13,7 @@ from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env 
 
 DB_STORE_MANAGEMENT_URI = os.environ.get(
     'DB_STORE_MANAGEMENT_URI',
-    f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/authentication"
+    f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/store_management"
 )
 PATH_LOGGING_DIR = os.environ.get('PATH_LOGGING_DIR', './logs/')
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')

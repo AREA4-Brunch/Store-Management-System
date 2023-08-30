@@ -63,28 +63,28 @@ def order_products():
                 super().__init__(IdMissing.msg.format(request_idx))
 
         class QuantityMissing(ParsingError, IPrioritizedError):
-            PRIORITY = 1
+            PRIORITY = 0
             msg = 'Product quantity is missing for request number {}.'
 
             def __init__(self, request_idx: int) -> None:
                 super().__init__(QuantityMissing.msg.format(request_idx))
 
         class InvalidId(ValidationError, IPrioritizedError):
-            PRIORITY = 2
+            PRIORITY = 0
             msg = 'Invalid product id for request number {}.'
 
             def __init__(self, request_idx: int) -> None:
                 super().__init__(InvalidId.msg.format(request_idx))
 
         class InvalidQuantity(ValidationError, IPrioritizedError):
-            PRIORITY = 3
+            PRIORITY = 0
             msg = 'Invalid product quantity for request number {}.'
 
             def __init__(self, request_idx: int) -> None:
                 super().__init__(InvalidQuantity.msg.format(request_idx))
 
         class ProductDoesNotExist(ValidationError, IPrioritizedError):
-            PRIORITY = 4
+            PRIORITY = 0
             msg = 'Invalid product for request number {}.'
 
             def __init__(self, request_idx: int) -> None:

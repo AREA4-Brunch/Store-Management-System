@@ -8,8 +8,8 @@ from ...scripts import (
 
 
 
-@click.command('store_management_db_upgrade_and_populate')
-def store_management_db_upgrade_and_populate():
+@click.command('store_management_db_upgrade_populate')
+def store_management_db_upgrade_populate():
     db: SQLAlchemy = current_app.container \
                     .services.db_store_management()
 
