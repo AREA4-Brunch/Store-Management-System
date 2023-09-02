@@ -4,7 +4,7 @@ version: '3.8'
 networks:
   deployment_store-mng-sys-net:
     external: true
-  deployment_spark-clusters-store-mng-net:
+  deployment_statistics-service-net:
     external: true
 
 
@@ -25,10 +25,13 @@ services:
     volumes:
       - type: bind
         source: ./logs/store_management_system/statistics_service/log1.log
-        target: /logs/log1.log
+        target: /app/logs/log1.log
       - type: bind
         source: ./logs/store_management_system/statistics_service/product_statistics.log
-        target: /logs/product_statistics.log
+        target: /app/logs/product_statistics.log
+      - type: bind
+        source: ./logs/store_management_system/statistics_service/category_statistics.log
+        target: /app/logs/category_statistics.log
     networks:
       - deployment_store-mng-sys-net
-      - deployment_spark-clusters-store-mng-net
+      - deployment_statistics-service-net

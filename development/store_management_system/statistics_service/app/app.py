@@ -1,10 +1,11 @@
 import logging
 from flask import Flask
-from .spark_apps.product_statistics.app import ProductStatisticsApp
 from dependency_injector import providers, containers
 from dependency_injector.wiring import inject, Provide
 from . import config
 from .settings import init_logger
+from .spark_apps.product_statistics.app import ProductStatisticsApp
+from .spark_apps.category_statistics.app import CategoryStatisticsApp
 
 
 
@@ -17,6 +18,15 @@ class AppContainer(containers.DeclarativeContainer):
     cur_config = config.provided['product_statistics']
     product_statistics = providers.Singleton(
         ProductStatisticsApp,
+        cur_config.PATH_MYSQL_CONNECTOR_JAR,
+        cur_config.SPARK_MASTER_URL,
+        cur_config.DB_STORE_MANAGEMENT_URI,
+        path_spark_app_file=cur_config.PATH_SPARK_APP_PY
+    )
+
+    cur_config = config.provided['category_statistics']
+    category_statistics = providers.Singleton(
+        CategoryStatisticsApp,
         cur_config.PATH_MYSQL_CONNECTOR_JAR,
         cur_config.SPARK_MASTER_URL,
         cur_config.DB_STORE_MANAGEMENT_URI,

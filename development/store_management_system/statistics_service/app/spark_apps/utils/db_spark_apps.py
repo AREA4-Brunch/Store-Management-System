@@ -6,7 +6,6 @@ from pyspark.sql import SparkSession
 def set_env_variables(
     path_spark_app='',
     path_mysql_connector_jar='',
-    spark_master='',
     custom=dict(),
 ):
     """ Sets environment variables to run spark app.
@@ -19,8 +18,6 @@ def set_env_variables(
         'SPARK_SUBMIT_ARGS':
             f'--driver-class-path {path_mysql_connector_jar} --jars {path_mysql_connector_jar}',
         # = f'--driver-class-path /app/mysql-connector-j-8.0.33.jar --jars /app/mysql-connector-j-8.0.33.jar'
-
-        # 'SPARK_MASTER': spark_master,
     }
 
     # add custom env vars on top of it

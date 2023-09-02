@@ -26,13 +26,8 @@ def calc_product_statisctics():
     logger = current_app.logger
 
     try:
-        # receive json object as a string
         statistics = requests.get(f'{STATISTICS_SERVICE_URL}/product_statistics')
-        logger.info(f'\nRECIEVED RESPONSE:{statistics}')
-        logger.info(f'\nRECIEVED CONTENT:{statistics.content}')
         statistics = statistics.json()
-        logger.info(f'\nRECIEVED AS JSON:{statistics}')
-        # statistics = statistics.json()
         return jsonify(statistics), 200
 
     except Exception as e:  # unexpected error
@@ -40,22 +35,21 @@ def calc_product_statisctics():
         return f'Internal error: {e}', 500
 
 
-# @STATISTICS_BP.route('/category_statistics', methods=['GET'])
-# @roles_required_login(
-#     ['owner'],
-#     roles_response_func=lambda _: (jsonify({ 'msg': 'Missing Authorization Header' }), 401)
-# )
-# def calc_category_statistics():
-#     # db: SQLAlchemy = current_app.container.services.db_store_management()
-#     logger = current_app.logger
 
-#     try:
-#         statistics = []
+@STATISTICS_BP.route('/category_statistics', methods=['GET'])
+@roles_required_login(
+    ['owner'],
+    roles_response_func=lambda _: (jsonify({ 'msg': 'Missing Authorization Header' }), 401)
+)
+def calc_category_statisctics():
+    # db: SQLAlchemy = current_app.container.services.db_store_management()
+    logger = current_app.logger
 
-#         return jsonify({
-#             'statistics': statistics
-#         }), 200
+    try:
+        statistics = requests.get(f'{STATISTICS_SERVICE_URL}/category_statistics')
+        statistics = statistics.json()
+        return jsonify(statistics), 200
 
-#     except Exception as e:  # unexpected error
-#         logger.exception(f'Failed to calc categories statistics')
-#         return f'Internal error: {e}', 500
+    except Exception as e:  # unexpected error
+        logger.exception(f'Failed to calc categorys statistics')
+        return f'Internal error: {e}', 500

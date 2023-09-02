@@ -16,7 +16,7 @@ LOG_LEVEL = getattr(logging, os.environ.get('LOGGING_LEVEL', 'DEBUG'))
 
 def init_logger(
     app: Flask,
-    log_file_path: str=r'/logs/log1.log',
+    log_file_path: str=r'./logs/log1.log',
     log_level=LOG_LEVEL,
 ):
     format = r'%(asctime)s [%(levelname)s] %(message)s'

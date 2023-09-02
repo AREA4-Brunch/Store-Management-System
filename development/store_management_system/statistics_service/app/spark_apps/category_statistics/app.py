@@ -6,7 +6,7 @@ from . import computation
 
 
 
-class ProductStatisticsApp:
+class CategoryStatisticsApp:
     def __init__(
         self,
         path_mysql_connector_jar: str,
@@ -35,13 +35,15 @@ class ProductStatisticsApp:
                                   or os.path.realpath(computation.__file__)
 
     def calc_stats(self):
-        """ Returns list of json strings. """
+        """ Returns a jsonified string representing a list of
+            strings - categories names.
+        """
         restore_env_variables = set_env_variables(
             path_spark_app=self._path_spark_app_file,
             path_mysql_connector_jar=self._path_mysql_connector_jar,
-            custom={  # namespace all custom env vars with PRODUCT_STATISTICS_
-                'PRODUCT_STATISTICS_SPARK_MASTER_URL': self._spark_cluster_master_url,
-                'PRODUCT_STATISTICS_DB_STORE_MANAGEMENT_URI': self._db_store_management_uri,
+            custom={  # namespace all custom env vars with CATEGORY_STATISTICS_
+                'CATEGORY_STATISTICS_SPARK_MASTER_URL': self._spark_cluster_master_url,
+                'CATEGORY_STATISTICS_DB_STORE_MANAGEMENT_URI': self._db_store_management_uri,
             }
         )
         # compute and fetch output of process that runs .py
