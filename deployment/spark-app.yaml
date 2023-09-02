@@ -1,0 +1,34 @@
+version: '3.8'
+
+
+networks:
+  deployment_store-mng-sys-net:
+    external: true
+  deployment_spark-clusters-store-mng-net:
+    external: true
+
+
+services:
+
+  statistics-service:
+    build:
+      context: ../development/store_management_system/statistics_service/
+      dockerfile: ./Dockerfile
+    ports:
+      - 5006:5000
+    environment:
+      - PRODUCT_STATISTICS_SPARK_MASTER_URL=spark://spark-master:7077
+      - CATEGORY_STATISTICS_SPARK_MASTER_URL=spark://spark-master:7077
+        # pymysql+mysql in URI will NOT work with jdbc:
+      - DB_STORE_MANAGEMENT_URI=mysql://root:etf@db-store-management:3306/store_management
+      - LOGGING_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./logs/store_management_system/statistics_service/log1.log
+        target: /logs/log1.log
+      - type: bind
+        source: ./logs/store_management_system/statistics_service/product_statistics.log
+        target: /logs/product_statistics.log
+    networks:
+      - deployment_store-mng-sys-net
+      - deployment_spark-clusters-store-mng-net

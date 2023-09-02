@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.10-alpine
 
 RUN mkdir -p /usr/service
 WORKDIR /usr/service

@@ -18,7 +18,10 @@ def test1():
     access_token = send_login_owner()
     print(f'Access token for owner: {access_token}')
 
-    create_product(access_token)
+    # test2()
+
+    # create_product(access_token)
+    get_product_statistics(access_token)
 
     return
 
@@ -91,7 +94,60 @@ def create_product(access_token):
     return
 
 
+def get_product_statistics(access_token):
+    payload = {
+        
+    }
 
+    files = {
+    }
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+
+    print('\n\nSent /product_statistics:')
+
+    response = requests.get(
+        url=BASE_OWNERS + '/product_statistics',
+        data=payload,
+        headers=headers,
+        files=files
+    )
+
+    print(response)
+    # print(response.text)
+    print(response.json())
+
+    return
+
+
+def test2():
+    payload = {
+        
+    }
+
+    files = {
+    }
+
+    headers = {
+        # 'Authorization': f'Bearer {access_token}',
+    }
+
+    print('\n\nSent /database:')
+
+    response = requests.get(
+        url="http://127.0.0.1:5010" + '/database',
+        data=payload,
+        headers=headers,
+        files=files
+    )
+
+    print(response)
+    print(response.text)
+    # print(response.json())
+
+    return
 
 
 if __name__ == '__main__':

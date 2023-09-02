@@ -1,6 +1,6 @@
 ./libs/db-user-management-0.1.0.tar.gz
-./libs/project-common-0.2.0.tar.gz
-./libs/flask-app-extended-1.1.1.tar.gz
+./libs/project-common-0.2.1.tar.gz
+./libs/flask-app-extended-1.1.2.tar.gz
 ./libs/std-authentication-0.3.0.tar.gz
 alembic==1.11.3
 async-timeout==4.0.3

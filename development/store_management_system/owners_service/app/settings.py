@@ -20,7 +20,7 @@ from .__secrets import STORE_MANAGEMENT_DB  # in production to replace with env 
 
 DB_STORE_MANAGEMENT_URI = os.environ.get(
     'DB_STORE_MANAGEMENT_URI',
-    f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost/store_management"
+    f"mysql+pymysql://root:{STORE_MANAGEMENT_DB['pwd']}@localhost:3306/store_management"
 )
 
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'JWT_SECRET_DEV_KEY')
@@ -32,11 +32,10 @@ REDIS_BLOCKLIST_DB = int(os.environ.get('REDIS_BLOCKLIST_DB', 0))
 PATH_LOGGING_DIR = os.environ.get('PATH_LOGGING_DIR', './logs/')
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
 
-PATH_PYSPARK_MYSQL_CONNECTOR_JAR = os.environ.get(
-    'PATH_PYSPARK_MYSQL_CONNECTOR_JAR',
-    './libs/mysql-connector-j-8.0.33.jar'
+SPARK_STATISTICS_SERVICE_URL = os.environ.get(
+    'SPARK_STATISTICS_SERVICE_URL',
+    'http://localhost:5004'
 )
-PYSPARK_MASTER_URL = os.environ.get('PYSPARK_MASTER_URL', 'local[*]')
 
 
 # ========================================================
@@ -62,11 +61,6 @@ class FileLoggerConfig(DefaultFlaskAppLoggerConfig):
     LOG_FILE_PATH = os.path.join(PATH_LOGGING_DIR, 'log1.log')
 
 
-class PySparkConfig(CustomConfigBase):
-    PATH_FILE_MYSQL_CONNECTOR_JAR = PATH_PYSPARK_MYSQL_CONNECTOR_JAR
-    MASTER_URL = PYSPARK_MASTER_URL
-
-
 
 # ========================================================
 # Gateways Configuration Helpers:
@@ -82,6 +76,10 @@ class RedisAuthorizationConfig(CustomConfigBase):
 
 class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
     auth = RedisAuthorizationConfig()
+
+
+class StatisticsServiceGatewayConfiguration(CustomConfigDecoratorBase):
+    SERVICE_URL = SPARK_STATISTICS_SERVICE_URL
 
 
 
@@ -100,12 +98,14 @@ class CoreConfiguration(CustomConfigDecoratorBase):
         DefaultURLBlueprintsConfig,
     ]).create_config()
 
-    pyspark = PySparkConfig()
-
 
 class GatewaysConfiguration(CustomConfigDecoratorBase):
     redis = DefaultConfigFactory(CustomConfigBase(), [
         RedisGatewaysConfiguration,
+    ]).create_config()
+
+    statistics = DefaultConfigFactory(CustomConfigBase(), [
+        StatisticsServiceGatewayConfiguration
     ]).create_config()
 
 
