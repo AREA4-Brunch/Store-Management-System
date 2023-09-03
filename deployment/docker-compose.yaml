@@ -10,6 +10,7 @@ networks:
   store-mng-sys-net:
   shared-blocklist-net:
   statistics-service-net:
+  ethereum-payment-net:
 
 
 services:
@@ -220,6 +221,7 @@ services:
       - REDIS_BLOCKLIST_PORT=6379
       - REDIS_BLOCKLIST_DB=0
       - LOGGING_LEVEL=DEBUG
+      - WEB3_SIMULATOR_URI=http://ethereum-simulator:8545
     volumes:
       - type: bind
         source: ./logs/store_management_system/customers_service
@@ -333,3 +335,17 @@ services:
   #     - SPARK_MASTER=spark://spark-master:7077
   #   networks:
   #     - statistics-service-net
+
+
+
+  # =====================================================================================
+  # ETHEREUM BASED PAYMENT ENVIRONMENT
+  # =====================================================================================
+
+
+  ethereum-simulator:
+    image: trufflesuite/ganache-cli:v6.12.2
+    ports:
+      - 8545:8545
+    networks:
+      - ethereum-payment-net

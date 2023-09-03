@@ -1,0 +1,18 @@
+version: '3.8'
+
+
+# x-usr-mng-db-env: &usr_mng_db_env
+#   DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management:3306/authentication
+
+
+networks:
+  ethereum-payment-net:
+
+
+services:
+  ethereum-simulator:
+    image: trufflesuite/ganache-cli:v6.12.2
+    ports:
+      - 8545:8545
+    networks:
+      - ethereum-payment-net

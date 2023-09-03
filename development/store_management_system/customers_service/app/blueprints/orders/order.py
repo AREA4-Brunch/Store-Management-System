@@ -1,7 +1,8 @@
 import gc
+import web3 as mweb3  # module web3
 from typing import Any
 from flask import (
-    # request as flask_request,
+    request as flask_request,
     current_app,
     jsonify,
 )
@@ -11,6 +12,7 @@ from std_authentication.services import AuthenticationService
 from project_common.utils.request import (
     flask_request_get_typechecked as req_get_typechecked
 )
+from pypayment.order_payment import OrderPayment
 from ...models import Product, Order, OrderItem
 from . import ORDERS_BP
 
@@ -26,6 +28,9 @@ def order_products():
     logged_in_user_identifier: str \
         = AuthenticationService.get_user_identifier_from_jwt_header()
     logger = current_app.logger
+    web3: mweb3.Web3 = current_app.container.gateways.web3()
+    # pretend the first account is always the owners
+    owner_address = web3.eth.accounts[0]
 
     class FieldMissingError(Exception):
         pass
@@ -52,17 +57,20 @@ def order_products():
         return form_fields
 
     def create_order(requested_products_raw: list):
+        # priority controls whether the error is raised immediately
+        # or starts a search for more priorized (smaller priority)
+        # error later in the data and raises only most prioritized one
         class IPrioritizedError(Exception):
             PRIORITY = float('inf')
 
-        class IdMissing(ParsingError, IPrioritizedError):
+        class IdMissing(FieldMissingError, IPrioritizedError):
             PRIORITY = 0
             msg = 'Product id is missing for request number {}.'
 
             def __init__(self, request_idx: int) -> None:
                 super().__init__(IdMissing.msg.format(request_idx))
 
-        class QuantityMissing(ParsingError, IPrioritizedError):
+        class QuantityMissing(FieldMissingError, IPrioritizedError):
             PRIORITY = 0
             msg = 'Product quantity is missing for request number {}.'
 
@@ -99,16 +107,17 @@ def order_products():
                 err_metric = (new_err_priority, new_err)
             return err_metric
 
-        def parse_request(request, request_idx: int):
+        def get_id(request, request_idx: int):
             id = request.get('id', None)
             if id is None:
                 raise IdMissing(request_idx)
+            return id
 
+        def get_quantity(request, request_idx: int):
             quantity = request.get('quantity', None)
             if quantity is None:
                 raise QuantityMissing(request_idx)
-
-            return id, quantity
+            return quantity
 
         def validate_id(id, request_idx: int):
             if not isinstance(id, int):
@@ -177,9 +186,12 @@ def order_products():
             if idx % 1000 == 0: gc.collect();
 
             try:
-                id, quantity = parse_request(request, idx)
+                # fetch data/do checks in order request by the task
+                id = get_id(request, idx)
+                quantity = get_quantity(request, idx)
                 validate_id(id, idx)
                 validate_quantity(quantity, idx)
+
                 # err != None => executed code above just to
                 # search for lower priority err, no need to execute
                 # code to search for the highest priority err (ProductDoesNotExist)
@@ -207,6 +219,30 @@ def order_products():
 
         return order
 
+    def deploy_smart_contract(order: Order):
+        def get_customer_address():
+            customer_address = flask_request.get('address', None)
+            if customer_address is None:
+                raise FieldMissingError('Field address is missing.')
+            return customer_address
+
+        def validate_customer_address(customer_address):
+            if not web3.is_address(customer_address):
+                raise ValidationError('Invalid address.')
+
+        customer_address = get_customer_address()
+        validate_customer_address(customer_address)
+
+        payment = OrderPayment(
+            web3,
+            owner_address,
+            customer_address,
+            order.total_price,
+        )
+
+        payment.deploy_contract().wait_for_receiept()
+
+
     try:
         form_fields = fetch_fields()
 
@@ -214,6 +250,8 @@ def order_products():
             # create_order locks products and in case of error
             # rollback will release
             order: Order = create_order(form_fields['requests'])
+            deploy_smart_contract(order)
+
             db.session.add(order)
             db.session.commit()
 

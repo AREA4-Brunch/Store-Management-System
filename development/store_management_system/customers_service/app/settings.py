@@ -22,6 +22,7 @@ REDIS_BLOCKLIST_PORT = int(os.environ.get('REDIS_BLOCKLIST_PORT', 6379))
 REDIS_BLOCKLIST_DB = int(os.environ.get('REDIS_BLOCKLIST_DB', 0))
 PATH_LOGGING_DIR = os.environ.get('PATH_LOGGING_DIR', './logs/')
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
+WEB3_SIMULATOR_URI = os.environ.get('WEB3_SIMULATOR_URI', 'http://0.0.0.0:8545')
 
 
 
@@ -66,6 +67,10 @@ class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
     auth = RedisAuthorizationConfig()
 
 
+class Web3Configuration(CustomConfigBase):
+    SIMULATOR_URI = WEB3_SIMULATOR_URI
+
+
 
 # ========================================================
 # App Configuration:
@@ -87,6 +92,8 @@ class GatewaysConfiguration(CustomConfigDecoratorBase):
     redis = DefaultConfigFactory(CustomConfigBase(), [
         RedisGatewaysConfiguration,
     ]).create_config()
+
+    web3 = Web3Configuration()
 
 
 class AppConfiguration(CustomConfigBase):

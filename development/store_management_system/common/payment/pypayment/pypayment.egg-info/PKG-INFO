@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: pypayment
+Version: 0.1.0
+Summary: Wrappers and utils for solidity smart contracts used for payment in the project.
+Home-page: https://github.com/AREA4-Brunch
+Author: Sale
+Author-email: sale.radenkovic@gmail.com
