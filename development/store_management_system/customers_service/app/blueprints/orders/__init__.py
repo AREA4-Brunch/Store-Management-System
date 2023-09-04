@@ -7,5 +7,6 @@ ORDERS_BP = flask.Blueprint('orders', __name__)
 from . import (
     order,
     status,
-    delivered
+    delivered,
+    pay,
 )

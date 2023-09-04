@@ -1,0 +1,49 @@
+version: '3.8'
+
+
+networks:
+  deployment_store-mng-sys-net:
+    external: true
+  deployment_shared-blocklist-net:
+    external: true
+  deployment_ethereum-payment-net:
+    external: true
+
+services:
+  customers-service:
+    build:
+      context: ../development/store_management_system/customers_service
+      dockerfile: ./Dockerfile
+    ports:
+      - 5002:5000
+    # depends_on:
+    #   migration-db-store-management:
+    #     condition: service_completed_successfully
+    #   blocklist-redis:
+    #     condition: service_healthy
+    #   ethereum-simulator:
+    #     condition: service_started
+    environment:
+      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management:3306/store_management
+      - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+      - REDIS_BLOCKLIST_HOST=blocklist-redis
+      - REDIS_BLOCKLIST_PORT=6379
+      - REDIS_BLOCKLIST_DB=0
+      - LOGGING_LEVEL=DEBUG
+      - WEB3_SIMULATOR_URI=http://ethereum-simulator:8545
+    volumes:
+      - type: bind
+        source: ./logs/store_management_system/customers_service
+        target: /usr/service/logs/
+    networks:
+      - deployment_store-mng-sys-net
+      - deployment_shared-blocklist-net
+      - deployment_ethereum-payment-net
+
+  # ethereum-simulator:
+  #   image: trufflesuite/ganache-cli:v6.12.2
+  #   ports:
+  #     - 8545:8545
+  #   networks:
+  #     - deployment_ethereum-payment-net

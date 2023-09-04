@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='db-store-management',
-    version='1.1.0',  # MAJOR.MINOR.PATCH format
+    version='1.2.0',  # MAJOR.MINOR.PATCH format
     packages=find_packages(),
     description="Models and structure of `store_management` database.",
     author='Sale',

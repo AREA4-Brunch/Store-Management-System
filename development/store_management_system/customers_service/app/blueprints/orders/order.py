@@ -12,7 +12,6 @@ from std_authentication.services import AuthenticationService
 from project_common.utils.request import (
     flask_request_get_typechecked as req_get_typechecked
 )
-from pypayment.order_payment import OrderPayment
 from ...models import Product, Order, OrderItem
 from . import ORDERS_BP
 
@@ -220,28 +219,57 @@ def order_products():
         return order
 
     def deploy_smart_contract(order: Order):
+        class InvalidCustomerAddress(ValidationError):
+            pass
+
         def get_customer_address():
-            customer_address = flask_request.get('address', None)
-            if customer_address is None:
+            customer_address = req_get_typechecked('json', str, 'address', None)
+            if customer_address is None or len(customer_address) == 0:
                 raise FieldMissingError('Field address is missing.')
             return customer_address
 
         def validate_customer_address(customer_address):
             if not web3.is_address(customer_address):
-                raise ValidationError('Invalid address.')
+                raise InvalidCustomerAddress('Invalid address.')
 
         customer_address = get_customer_address()
         validate_customer_address(customer_address)
 
-        payment = OrderPayment(
-            web3,
-            owner_address,
-            customer_address,
-            order.total_price,
+        def get_native_src(file_path):
+            with open(file_path, 'r') as in_file:
+                return in_file.read()
+
+        payment = web3.eth.contract(
+            abi=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.abi'),
+            bytecode=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.bin'),
         )
 
-        payment.deploy_contract().wait_for_receiept()
+        try:
+            # deploy contract to blockchanin, pay
+            # gas for contructor call
+            contract_hash = payment.constructor(
+                customer_address,
+                int(round(order.total_price)),  # round half up
+            ).transact({
+                'from': owner_address,
+                # 'gas': 200000,  # gas limit
+            })
 
+            receipt = web3.eth.wait_for_transaction_receipt(
+                contract_hash
+            )
+
+            contract_address = receipt['contractAddress']
+            return contract_address
+
+        # except ValueError as e:
+        #     raise e
+
+        # except mweb3.exceptions.ContractLogicError as e:
+            # raise e
+
+        except Exception as e:
+            raise InvalidCustomerAddress('Invalid address.')
 
     try:
         form_fields = fetch_fields()
@@ -250,7 +278,8 @@ def order_products():
             # create_order locks products and in case of error
             # rollback will release
             order: Order = create_order(form_fields['requests'])
-            deploy_smart_contract(order)
+            contract_address = deploy_smart_contract(order)
+            order.contract_address = contract_address
 
             db.session.add(order)
             db.session.commit()

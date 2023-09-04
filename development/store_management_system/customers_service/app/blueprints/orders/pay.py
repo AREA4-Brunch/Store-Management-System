@@ -15,12 +15,12 @@ from ...models import Order
 
 
 
-@ORDERS_BP.route('/delivered', methods=['POST'])
+@ORDERS_BP.route('/pay', methods=['POST'])
 @roles_required_login(
     [ 'customer' ],
     roles_response_func=lambda _: (jsonify({ 'msg': 'Missing Authorization Header' }), 401)
 )
-def mark_order_completed():
+def pay_order():
     db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
     web3: mweb3.Web3 = current_app.container.gateways.web3()
@@ -58,10 +58,6 @@ def mark_order_completed():
         if order is None:  # order does not exist
             raise ValidationError(f'Invalid order id.')
 
-        # check if the order has been picked up by a courier
-        if order.status != 'PENDING':
-            raise ValidationError(f'Invalid order id.')
-
         return order
 
     def get_customer_payment_info():
@@ -94,67 +90,63 @@ def mark_order_completed():
 
         return customer_address, private_key
 
-    def transact_and_close_contract(customer_address, private_key, contract_address):
+    def transact_and_close_contract(
+        customer_address,
+        private_key,
+        contract_address,
+        price: int,  # in wei
+    ):
         def get_native_src(file_path):
             with open(file_path, 'r') as in_file:
                 return in_file.read()
 
-        payment = web3.eth.contract(
-            abi=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.abi'),
-            bytecode=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.bin'),
-        )
-
         try:
+            payment = web3.eth.contract(
+                contract_address,
+                abi=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.abi'),
+                bytecode=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.bin'),
+            )
+
             transaction = (
-                payment.functions.confirmDelivery()
+                payment.functions.pay()
                     .build_transaction({
                         'from': customer_address,
                         'gasPrice': web3.eth.gas_price,
                         'nonce': web3.eth.get_transaction_count(customer_address),
-                        'to': contract_address
+                        'value': price,
                     })
             )
             transaction = web3.eth.account.sign_transaction(transaction, private_key)
             transaction_hash = web3.eth.send_raw_transaction(transaction.rawTransaction)
             receipt = web3.eth.wait_for_transaction_receipt(transaction_hash)
 
-        except mweb3.exceptions.ContractLogicError as e:
-            err_msg = str(e)
-
-            if 'Restricted to all but customer.' in err_msg:
-                raise SmartContractError('Invalid customer account.')
-
-            if 'Not full price was paid.' in err_msg:
-                raise SmartContractError('Transfer not complete.')
-
-            if 'Requires courier to have been assigned.' in err_msg:
-                raise SmartContractError('Delivery not complete.')
+        except ValueError as e:
+            if 'insufficient funds' in str(e):
+                raise SmartContractError('Insufficient funds.')
 
             raise e
 
-        except Exception as e:
-            logger.exception(f'WHY THIS ?')
-            raise ValidationError('Invalid customer account.')
+        except mweb3.exceptions.ContractLogicError as e:
+            err_msg = str(e)
+
+            # if e.args[0] == 'Restricted to all but customer.':
+            #     raise SmartContractError('')
+
+            if 'Only 1 transaction allowed, strictly equal to price.' in err_msg:
+                raise SmartContractError('Transfer already complete.')
+
+            raise e
 
     try:
         id = get_id()
         order = get_order(id)
-
-        try:
-            order.status = 'COMPLETE'
-            customer_address, private_key = get_customer_payment_info()
-            transact_and_close_contract(
-                customer_address,
-                private_key,
-                order.contract_address
-            )
-
-            db.session.add(order)
-            db.session.commit()
-
-        except Exception as e:
-            db.session.rollback()
-            raise e
+        customer_address, private_key = get_customer_payment_info()
+        transact_and_close_contract(
+            customer_address,
+            private_key,
+            order.contract_address,
+            round(order.total_price)
+        )
 
         return '', 200
 

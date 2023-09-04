@@ -25,6 +25,19 @@ LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
 WEB3_SIMULATOR_URI = os.environ.get('WEB3_SIMULATOR_URI', 'http://0.0.0.0:8545')
 
 
+def get_smart_contracts_native_src() -> dict:
+    def get_native_src(file_path):
+        with open(file_path, 'r') as in_file:
+            return in_file.read()
+
+    return {
+        'OrderPayment': {
+            'abi': get_native_src('./libs/compiled_solidity/OrderPayment.abi'),
+            'bin': get_native_src('./libs/compiled_solidity/OrderPayment.bin'),
+        }
+    }
+
+
 
 # ========================================================
 # Core Configurations Helpers:

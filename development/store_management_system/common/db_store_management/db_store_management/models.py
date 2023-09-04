@@ -27,6 +27,7 @@ def create_models(db: SQLAlchemy) -> dict:
         status = db.Column(db.String(16), nullable=False)
         creation_time = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now())
         customer = db.Column(db.String(256), nullable=False)
+        contract_address = db.Column(db.String(256), default='')
 
         items = db.relationship(
             'OrderItem',

@@ -1,5 +1,6 @@
 import redis
-from web3 import Web3, HTTProvider
+from web3 import Web3, HTTPProvider
+from web3.eth import Contract
 # import pymysql  # to init SQLAlchemy
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +12,7 @@ from flask_app_extended.config import Configuration
 from std_authentication import AuthenticationService
 from project_common.utils.app import CommonAppFactoryBase
 from db_store_management.models import create_models
-from .settings import AppConfiguration
+from .settings import AppConfiguration, get_smart_contracts_native_src
 
 
 
@@ -36,8 +37,23 @@ class Gateways(containers.DeclarativeContainer):
     )
 
     web3: Web3 = providers.Singleton(
-        lambda host_uri: Web3(HTTProvider(host_uri)),
+        lambda host_uri: Web3(HTTPProvider(host_uri)),
         config.provided.web3.SIMULATOR_URI
+    )
+
+    smart_contracts_native_src: dict = providers.Singleton(
+        get_smart_contracts_native_src,
+    )
+
+    order_payment: Contract = providers.Factory(
+        lambda web3, native_src: (
+            web3.eth.contract(
+                abi=native_src['OrderPayment']['abi'],
+                bytecode=native_src['OrderPayment']['bin'],
+            )
+        ),
+        web3,
+        smart_contracts_native_src
     )
 
 

@@ -1,4 +1,6 @@
 import redis
+from web3 import Web3, HTTPProvider
+from web3.eth import Contract
 # import pymysql  # to init SQLAlchemy
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -32,6 +34,11 @@ class Gateways(containers.DeclarativeContainer):
         port=config.provided.redis.auth.PORT,
         db=config.provided.redis.auth.DB,
         decode_responses=config.provided.redis.auth.DECODE_RESPONSES
+    )
+
+    web3: Web3 = providers.Singleton(
+        lambda host_uri: Web3(HTTPProvider(host_uri)),
+        config.provided.web3.SIMULATOR_URI
     )
 
 

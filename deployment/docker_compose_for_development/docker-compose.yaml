@@ -60,10 +60,10 @@ services:
         target: /var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 10s
-      retries: 30
-      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     networks:
       - usr-mng-sys-net
 
@@ -136,10 +136,10 @@ services:
         target: /var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 10s
-      retries: 30
-      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     networks:
       - store-mng-sys-net
       - statistics-service-net
@@ -202,65 +202,65 @@ services:
       - shared-blocklist-net
       - statistics-service-net
 
-  customers-service:
-    build:
-      context: ../development/store_management_system/customers_service
-      dockerfile: ./Dockerfile
-    ports:
-      - 5002:5000
-    depends_on:
-      migration-db-store-management:
-        condition: service_completed_successfully
-      blocklist-redis:
-        condition: service_healthy
-      ethereum-simulator:
-        condition: service_started
-    environment:
-      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
-      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management:3306/store_management
-      - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
-      - REDIS_BLOCKLIST_HOST=blocklist-redis
-      - REDIS_BLOCKLIST_PORT=6379
-      - REDIS_BLOCKLIST_DB=0
-      - LOGGING_LEVEL=DEBUG
-      - WEB3_SIMULATOR_URI=http://ethereum-simulator:8545
-    volumes:
-      - type: bind
-        source: ./logs/store_management_system/customers_service
-        target: /usr/service/logs/
-    networks:
-      - store-mng-sys-net
-      - shared-blocklist-net
-      - ethereum-payment-net
+  # customers-service:
+  #   build:
+  #     context: ../development/store_management_system/customers_service
+  #     dockerfile: ./Dockerfile
+  #   ports:
+  #     - 5002:5000
+  #   depends_on:
+  #     migration-db-store-management:
+  #       condition: service_completed_successfully
+  #     blocklist-redis:
+  #       condition: service_healthy
+  #     ethereum-simulator:
+  #       condition: service_started
+  #   environment:
+  #     # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+  #     - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management:3306/store_management
+  #     - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+  #     - REDIS_BLOCKLIST_HOST=blocklist-redis
+  #     - REDIS_BLOCKLIST_PORT=6379
+  #     - REDIS_BLOCKLIST_DB=0
+  #     - LOGGING_LEVEL=DEBUG
+  #     - WEB3_SIMULATOR_URI=http://ethereum-simulator:8545
+  #   volumes:
+  #     - type: bind
+  #       source: ./logs/store_management_system/customers_service
+  #       target: /usr/service/logs/
+  #   networks:
+  #     - store-mng-sys-net
+  #     - shared-blocklist-net
+  #     - ethereum-payment-net
 
-  couriers-service:
-    build:
-      context: ../development/store_management_system/couriers_service
-      dockerfile: ./Dockerfile
-    ports:
-      - 5003:5000
-    depends_on:
-      migration-db-store-management:
-        condition: service_completed_successfully
-      blocklist-redis:
-        condition: service_healthy
-    environment:
-      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
-      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management:3306/store_management
-      - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
-      - REDIS_BLOCKLIST_HOST=blocklist-redis
-      - REDIS_BLOCKLIST_PORT=6379
-      - REDIS_BLOCKLIST_DB=0
-      - LOGGING_LEVEL=DEBUG
-      - WEB3_SIMULATOR_URI=http://ethereum-simulator:8545
-    volumes:
-      - type: bind
-        source: ./logs/store_management_system/couriers_service
-        target: /usr/service/logs/
-    networks:
-      - store-mng-sys-net
-      - shared-blocklist-net
-      - ethereum-payment-net
+  # couriers-service:
+  #   build:
+  #     context: ../development/store_management_system/couriers_service
+  #     dockerfile: ./Dockerfile
+  #   ports:
+  #     - 5003:5000
+  #   depends_on:
+  #     migration-db-store-management:
+  #       condition: service_completed_successfully
+  #     blocklist-redis:
+  #       condition: service_healthy
+  #   environment:
+  #     # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+  #     - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management:3306/store_management
+  #     - JWT_SECRET_KEY=JWT_SECRET_DEV_KEY
+  #     - REDIS_BLOCKLIST_HOST=blocklist-redis
+  #     - REDIS_BLOCKLIST_PORT=6379
+  #     - REDIS_BLOCKLIST_DB=0
+  #     - LOGGING_LEVEL=DEBUG
+  #     - WEB3_SIMULATOR_URI=http://ethereum-simulator:8545
+  #   volumes:
+  #     - type: bind
+  #       source: ./logs/store_management_system/couriers_service
+  #       target: /usr/service/logs/
+  #   networks:
+  #     - store-mng-sys-net
+  #     - shared-blocklist-net
+  #     - ethereum-payment-net
 
 
   # =====================================================================================
@@ -268,78 +268,77 @@ services:
   # =====================================================================================
 
 
-  statistics-service:
-    build:
-      context: ../development/store_management_system/statistics_service/
-      dockerfile: ./Dockerfile
-    ports:
-      - 5006:5000
-    depends_on:
-      db-store-management:
-        condition: service_started
-      spark-master:
-        condition: service_started
+  # statistics-service:
+  #   build:
+  #     context: ../development/store_management_system/statistics_service/
+  #     dockerfile: ./Dockerfile
+  #   ports:
+  #     - 5006:5000
+  #   depends_on:
+  #     db-store-management:
+  #       condition: service_started
+  #     spark-master:
+  #       condition: service_started
+  #   environment:
+  #     - PRODUCT_STATISTICS_SPARK_MASTER_URL=spark://spark-master:7077
+  #     - CATEGORY_STATISTICS_SPARK_MASTER_URL=spark://spark-master:7077
+  #       # pymysql+mysql in URI will NOT work with jdbc:
+  #     - DB_STORE_MANAGEMENT_URI=mysql://root:etf@db-store-management:3306/store_management
+  #     - LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - type: bind
+  #       source: ./logs/store_management_system/statistics_service/log1.log
+  #       target: /app/logs/log1.log
+  #     - type: bind
+  #       source: ./logs/store_management_system/statistics_service/product_statistics.log
+  #       target: /app/logs/product_statistics.log
+  #     - type: bind
+  #       source: ./logs/store_management_system/statistics_service/category_statistics.log
+  #       target: /app/logs/category_statistics.log
+  #   # healthcheck:
+  #   #   test: ["CMD", "telnet", "localhost", "5000"]
+  #   #   interval: 5s
+  #   #   timeout: 5s
+  #   #   retries: 10
+  #   #   start_period: 5s
+  #   networks:
+  #     - statistics-service-net
 
-    environment:
-      - PRODUCT_STATISTICS_SPARK_MASTER_URL=spark://spark-master:7077
-      - CATEGORY_STATISTICS_SPARK_MASTER_URL=spark://spark-master:7077
-        # pymysql+mysql in URI will NOT work with jdbc:
-      - DB_STORE_MANAGEMENT_URI=mysql://root:etf@db-store-management:3306/store_management
-      - LOGGING_LEVEL=DEBUG
-    volumes:
-      - type: bind
-        source: ./logs/store_management_system/statistics_service/log1.log
-        target: /app/logs/log1.log
-      - type: bind
-        source: ./logs/store_management_system/statistics_service/product_statistics.log
-        target: /app/logs/product_statistics.log
-      - type: bind
-        source: ./logs/store_management_system/statistics_service/category_statistics.log
-        target: /app/logs/category_statistics.log
-    # healthcheck:
-    #   test: ["CMD", "telnet", "localhost", "5000"]
-    #   interval: 5s
-    #   timeout: 5s
-    #   retries: 10
-    #   start_period: 5s
-    networks:
-      - statistics-service-net
+  # spark-master:
+  #   image: bde2020/spark-master:3.3.0-hadoop3.3
+  #   container_name: spark-master
+  #   ports:
+  #     - 8081:8080
+  #     - 7077:7077
+  #   environment:
+  #     - INIT_DEAMON_STEP=setup_spark
+  #   networks:
+  #     - statistics-service-net
 
-  spark-master:
-    image: bde2020/spark-master:3.3.0-hadoop3.3
-    container_name: spark-master
-    ports:
-      - 8081:8080
-      - 7077:7077
-    environment:
-      - INIT_DEAMON_STEP=setup_spark
-    networks:
-      - statistics-service-net
+  # spark-worker1-store-management:
+  #   image: bde2020/spark-worker:3.3.0-hadoop3.3
+  #   container_name: spark-worker-1
+  #   depends_on:
+  #     - spark-master
+  #   ports:
+  #     - 8082:8081
+  #   environment:
+  #     - SPARK_MASTER=spark://spark-master:7077
+  #   networks:
+  #     - statistics-service-net
 
-  spark-worker1-store-management:
-    image: bde2020/spark-worker:3.3.0-hadoop3.3
-    container_name: spark-worker-1
-    depends_on:
-      - spark-master
-    ports:
-      - 8082:8081
-    environment:
-      - SPARK_MASTER=spark://spark-master:7077
-    networks:
-      - statistics-service-net
-
-  spark-worker2-store-management:
-    image: bde2020/spark-worker:3.3.0-hadoop3.3
-    container_name: spark-worker-2
-    depends_on:
-      spark-master:
-        condition: service_started
-    ports:
-      - 8083:8081
-    environment:
-      - SPARK_MASTER=spark://spark-master:7077
-    networks:
-      - statistics-service-net
+  # spark-worker2-store-management:
+  #   image: bde2020/spark-worker:3.3.0-hadoop3.3
+  #   container_name: spark-worker-2
+  #   depends_on:
+  #     spark-master:
+  #       condition: service_started
+  #   ports:
+  #     - 8083:8081
+  #   environment:
+  #     - SPARK_MASTER=spark://spark-master:7077
+  #   networks:
+  #     - statistics-service-net
 
 
 
