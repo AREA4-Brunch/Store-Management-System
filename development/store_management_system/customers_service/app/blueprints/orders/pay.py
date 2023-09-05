@@ -1,5 +1,5 @@
 import json
-import web3 as mweb3  # module web3
+import web3
 from flask import (
     request as flask_request,
     current_app,
@@ -23,7 +23,7 @@ from ...models import Order
 def pay_order():
     db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
-    web3: mweb3.Web3 = current_app.container.gateways.web3()
+    w3: web3.Web3 = current_app.container.gateways.w3()
 
 
     class FieldMissingError(Exception):
@@ -76,10 +76,10 @@ def pay_order():
 
         try:
             secret_customer_data = json.loads(secret_customer_data.replace("'", '"'))
-            customer_address = web3.to_checksum_address(
+            customer_address = w3.to_checksum_address(
                 secret_customer_data['address']
             )
-            private_key = mweb3.Account.decrypt(
+            private_key = web3.Account.decrypt(
                 secret_customer_data,
                 passphrase
             ).hex()
@@ -96,29 +96,23 @@ def pay_order():
         contract_address,
         price: int,  # in wei
     ):
-        def get_native_src(file_path):
-            with open(file_path, 'r') as in_file:
-                return in_file.read()
+        payment = current_app.container.services.smart_contracts_factory()('OrderPayment')
 
         try:
-            payment = web3.eth.contract(
-                contract_address,
-                abi=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.abi'),
-                bytecode=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.bin'),
-            )
 
             transaction = (
                 payment.functions.pay()
                     .build_transaction({
                         'from': customer_address,
-                        'gasPrice': web3.eth.gas_price,
-                        'nonce': web3.eth.get_transaction_count(customer_address),
+                        'gasPrice': w3.eth.gas_price,
+                        'nonce': w3.eth.get_transaction_count(customer_address),
                         'value': price,
+                        'to': contract_address
                     })
             )
-            transaction = web3.eth.account.sign_transaction(transaction, private_key)
-            transaction_hash = web3.eth.send_raw_transaction(transaction.rawTransaction)
-            receipt = web3.eth.wait_for_transaction_receipt(transaction_hash)
+            transaction = w3.eth.account.sign_transaction(transaction, private_key)
+            transaction_hash = w3.eth.send_raw_transaction(transaction.rawTransaction)
+            receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
 
         except ValueError as e:
             if 'insufficient funds' in str(e):
@@ -126,11 +120,11 @@ def pay_order():
 
             raise e
 
-        except mweb3.exceptions.ContractLogicError as e:
+        except web3.exceptions.ContractLogicError as e:
             err_msg = str(e)
 
-            # if e.args[0] == 'Restricted to all but customer.':
-            #     raise SmartContractError('')
+            if 'Restricted to all but customer.' in err_msg:  # unexpected
+                raise SmartContractError('Invalid customer account.')
 
             if 'Only 1 transaction allowed, strictly equal to price.' in err_msg:
                 raise SmartContractError('Transfer already complete.')

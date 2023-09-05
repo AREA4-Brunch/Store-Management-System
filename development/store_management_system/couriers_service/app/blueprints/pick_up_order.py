@@ -1,4 +1,4 @@
-import web3 as mweb3  # module web3
+import web3  # module w3
 from flask import (
     request as flask_request,
     current_app,
@@ -22,9 +22,9 @@ from ..models import Order
 def pick_up_order():
     db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
-    web3: mweb3.Web3 = current_app.container.gateways.web3()
+    w3: web3.Web3 = current_app.container.gateways.w3()
     # pretend the first account is always the owners
-    owner_address = web3.eth.accounts[0]
+    owner_address = w3.eth.accounts[0]
 
     class FieldMissingError(Exception):
         pass
@@ -73,18 +73,13 @@ def pick_up_order():
         return courier_address
 
     def validate_courier_address(courier_address):
-        if not web3.is_address(courier_address):
+        if not w3.is_address(courier_address):
             raise ValidationError('Invalid address.')
 
     def assign_courier(contract_address):
-        def get_native_src(file_path):
-            with open(file_path, 'r') as in_file:
-                return in_file.read()
-
-        payment = web3.eth.contract(
-            contract_address,
-            abi=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.abi'),
-            bytecode=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.bin'),
+        payment = current_app.container.services.smart_contracts_factory()(
+            'OrderPayment',
+            contract_address
         )
 
         try:
@@ -94,14 +89,14 @@ def pick_up_order():
                 'from': owner_address,
             })
 
-        except mweb3.exceptions.ContractLogicError as e:
+        except web3.exceptions.ContractLogicError as e:
             err_msg = str(e)
 
-            # if e.args[0] == 'Restricted to all but owner.':
-            #     raise SmartContractError('')
+            # if 'Restricted to all but owner.' in err_msg:  # unexpected
+            #     raise e
 
-            # if e.args[0] == 'Requires courier not to have been assigned.':
-            #     raise SmartContractError('Courier already assigned.')
+            # if 'Requires courier not to have been assigned.' in err_msg:  # unexpected
+            #     raise e
 
             if 'Not full price was paid.' in err_msg:
                 raise SmartContractError('Transfer not complete.')

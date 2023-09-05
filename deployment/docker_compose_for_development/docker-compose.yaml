@@ -60,16 +60,16 @@ services:
         target: /var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 5s
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
     networks:
       - usr-mng-sys-net
 
   migration-db-user-management:
     build:
-      context: ../development/user_management_system/management/db_management_service
+      context: ../../development/user_management_system/management/db_management_service
       dockerfile: ./Dockerfile
     ports:
       - 5004:5000
@@ -93,7 +93,7 @@ services:
 
   authentication:
     build:
-      context: ../development/user_management_system/authentication_service
+      context: ../../development/user_management_system/authentication_service
       dockerfile: ./Dockerfile
     ports:
       - 5000:5000
@@ -136,17 +136,17 @@ services:
         target: /var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 5s
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
     networks:
       - store-mng-sys-net
       - statistics-service-net
 
   migration-db-store-management:
     build:
-      context: ../development/store_management_system/management/db_management_service
+      context: ../../development/store_management_system/management/db_management_service
       dockerfile: ./Dockerfile
     ports:
       - 5005:5000
@@ -170,9 +170,9 @@ services:
 
   owners-service:
     build:
-      context: ../development/store_management_system/owners_service
+      context: ../../development/store_management_system/owners_service
       dockerfile: ./Dockerfile
-      # dockerfile: ../development/store_management_system/owners_service/docker/Dockerfile
+      # dockerfile: ../../development/store_management_system/owners_service/docker/Dockerfile
     ports:
       - 5001:5000
     depends_on:
@@ -204,7 +204,7 @@ services:
 
   # customers-service:
   #   build:
-  #     context: ../development/store_management_system/customers_service
+  #     context: ../../development/store_management_system/customers_service
   #     dockerfile: ./Dockerfile
   #   ports:
   #     - 5002:5000
@@ -235,7 +235,7 @@ services:
 
   # couriers-service:
   #   build:
-  #     context: ../development/store_management_system/couriers_service
+  #     context: ../../development/store_management_system/couriers_service
   #     dockerfile: ./Dockerfile
   #   ports:
   #     - 5003:5000
@@ -270,7 +270,7 @@ services:
 
   # statistics-service:
   #   build:
-  #     context: ../development/store_management_system/statistics_service/
+  #     context: ../../development/store_management_system/statistics_service/
   #     dockerfile: ./Dockerfile
   #   ports:
   #     - 5006:5000

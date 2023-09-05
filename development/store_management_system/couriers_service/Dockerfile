@@ -18,4 +18,7 @@ COPY ./manage.py ./manage.py
 COPY ./app ./app
 
 
+ENV COMPILED_SOLIDTY_SRC_DIR_PATH=./libs/compiled_solidity
+
+
 ENTRYPOINT [ "python", "manage.py", "run", "--host=0.0.0.0", "--port=5000", "--debug" ]

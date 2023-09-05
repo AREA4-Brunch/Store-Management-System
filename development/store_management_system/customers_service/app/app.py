@@ -1,7 +1,9 @@
+import os
 import redis
+from typing import Callable
+# import pymysql  # to init SQLAlchemy
 from web3 import Web3, HTTPProvider
 from web3.eth import Contract
-# import pymysql  # to init SQLAlchemy
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -12,8 +14,22 @@ from flask_app_extended.config import Configuration
 from std_authentication import AuthenticationService
 from project_common.utils.app import CommonAppFactoryBase
 from db_store_management.models import create_models
-from .settings import AppConfiguration, get_smart_contracts_native_src
+from .settings import AppConfiguration
 
+
+
+def get_smart_contracts_native_src(native_src_dir_path) -> dict:
+    def get_native_src(file_name):
+        file_path = os.path.join(native_src_dir_path, file_name)
+        with open(file_path, 'r') as in_file:
+            return in_file.read()
+
+    return {
+        'OrderPayment': {
+            'abi': get_native_src('OrderPayment-0.4.0.abi'),
+            'bin': get_native_src('OrderPayment-0.4.0.bin'),
+        }
+    }
 
 
 class Core(containers.DeclarativeContainer):
@@ -22,6 +38,11 @@ class Core(containers.DeclarativeContainer):
     app = providers.Singleton(
         lambda config: DefaultAppFactory(config).create_app(),
         config.provided.flask_app
+    )
+
+    smart_contracts_native_src_register: dict = providers.Singleton(
+        get_smart_contracts_native_src,
+        config.provided.smart_contracts.NATIVE_SRC_DIR_PATH
     )
 
 
@@ -36,24 +57,9 @@ class Gateways(containers.DeclarativeContainer):
         decode_responses=config.provided.redis.auth.DECODE_RESPONSES
     )
 
-    web3: Web3 = providers.Singleton(
+    w3: Web3 = providers.Singleton(
         lambda host_uri: Web3(HTTPProvider(host_uri)),
-        config.provided.web3.SIMULATOR_URI
-    )
-
-    smart_contracts_native_src: dict = providers.Singleton(
-        get_smart_contracts_native_src,
-    )
-
-    order_payment: Contract = providers.Factory(
-        lambda web3, native_src: (
-            web3.eth.contract(
-                abi=native_src['OrderPayment']['abi'],
-                bytecode=native_src['OrderPayment']['bin'],
-            )
-        ),
-        web3,
-        smart_contracts_native_src
+        config.provided.w3.SIMULATOR_URI
     )
 
 
@@ -82,6 +88,18 @@ class Services(containers.DeclarativeContainer):
         redis_client=gateways.redis_client_auth
     )
 
+    smart_contracts_factory: Callable = providers.Singleton(
+        lambda w3, native_src: (
+            lambda contract, address=None: w3.eth.contract(
+                address=address,
+                abi=native_src[contract]['abi'],
+                bytecode=native_src[contract]['bin'],
+            )
+        ),
+        gateways.w3,
+        core.smart_contracts_native_src_register
+    )
+
 
 class ApplicationIoCContainer(containers.DeclarativeContainer):
     config = providers.Singleton(AppConfiguration)
@@ -102,7 +120,6 @@ class ApplicationIoCContainer(containers.DeclarativeContainer):
         core=core,
         gateways=gateways
     )
-
 
 
 class AppFactory(CommonAppFactoryBase):

@@ -1,5 +1,5 @@
 import json
-import web3 as mweb3  # module web3
+import web3
 from flask import (
     request as flask_request,
     current_app,
@@ -23,7 +23,7 @@ from ...models import Order
 def mark_order_completed():
     db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
-    web3: mweb3.Web3 = current_app.container.gateways.web3()
+    w3: web3.Web3 = current_app.container.gateways.w3()
 
 
     class FieldMissingError(Exception):
@@ -75,50 +75,39 @@ def mark_order_completed():
         if passphrase is None or len(passphrase) == 0:
             raise FieldMissingError('Missing passphrase.')
 
-        # logger.info(f'JSON: {secret_customer_data}')
-        # logger.info(f'passphrase: {passphrase}')
-
         try:
             secret_customer_data = json.loads(secret_customer_data.replace("'", '"'))
-            customer_address = web3.to_checksum_address(
+            customer_address = w3.to_checksum_address(
                 secret_customer_data['address']
             )
-            private_key = mweb3.Account.decrypt(
+            private_key = web3.Account.decrypt(
                 secret_customer_data,
                 passphrase
             ).hex()
 
         except Exception as e:
-            logger.exception(f'HEY I GOT : {e}')
             raise ValidationError('Invalid credentials.')
 
         return customer_address, private_key
 
     def transact_and_close_contract(customer_address, private_key, contract_address):
-        def get_native_src(file_path):
-            with open(file_path, 'r') as in_file:
-                return in_file.read()
-
-        payment = web3.eth.contract(
-            abi=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.abi'),
-            bytecode=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.bin'),
-        )
+        payment = current_app.container.services.smart_contracts_factory()('OrderPayment')
 
         try:
             transaction = (
                 payment.functions.confirmDelivery()
                     .build_transaction({
                         'from': customer_address,
-                        'gasPrice': web3.eth.gas_price,
-                        'nonce': web3.eth.get_transaction_count(customer_address),
+                        'gasPrice': w3.eth.gas_price,
+                        'nonce': w3.eth.get_transaction_count(customer_address),
                         'to': contract_address
                     })
             )
-            transaction = web3.eth.account.sign_transaction(transaction, private_key)
-            transaction_hash = web3.eth.send_raw_transaction(transaction.rawTransaction)
-            receipt = web3.eth.wait_for_transaction_receipt(transaction_hash)
+            transaction = w3.eth.account.sign_transaction(transaction, private_key)
+            transaction_hash = w3.eth.send_raw_transaction(transaction.rawTransaction)
+            receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
 
-        except mweb3.exceptions.ContractLogicError as e:
+        except web3.exceptions.ContractLogicError as e:
             err_msg = str(e)
 
             if 'Restricted to all but customer.' in err_msg:
@@ -133,7 +122,6 @@ def mark_order_completed():
             raise e
 
         except Exception as e:
-            logger.exception(f'WHY THIS ?')
             raise ValidationError('Invalid customer account.')
 
     try:

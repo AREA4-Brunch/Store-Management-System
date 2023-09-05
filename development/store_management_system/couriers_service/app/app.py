@@ -1,4 +1,6 @@
 import redis
+import os
+from typing import Callable
 from web3 import Web3, HTTPProvider
 from web3.eth import Contract
 # import pymysql  # to init SQLAlchemy
@@ -16,12 +18,31 @@ from .settings import AppConfiguration
 
 
 
+def get_smart_contracts_native_src(native_src_dir_path) -> dict:
+    def get_native_src(file_name):
+        file_path = os.path.join(native_src_dir_path, file_name)
+        with open(file_path, 'r') as in_file:
+            return in_file.read()
+
+    return {
+        'OrderPayment': {
+            'abi': get_native_src('OrderPayment-0.4.0.abi'),
+            'bin': get_native_src('OrderPayment-0.4.0.bin'),
+        }
+    }
+
+
 class Core(containers.DeclarativeContainer):
     config = providers.Dependency(instance_of=Configuration)
 
     app = providers.Singleton(
         lambda config: DefaultAppFactory(config).create_app(),
         config.provided.flask_app
+    )
+
+    smart_contracts_native_src_register: dict = providers.Singleton(
+        get_smart_contracts_native_src,
+        config.provided.smart_contracts.NATIVE_SRC_DIR_PATH
     )
 
 
@@ -36,9 +57,9 @@ class Gateways(containers.DeclarativeContainer):
         decode_responses=config.provided.redis.auth.DECODE_RESPONSES
     )
 
-    web3: Web3 = providers.Singleton(
+    w3: Web3 = providers.Singleton(
         lambda host_uri: Web3(HTTPProvider(host_uri)),
-        config.provided.web3.SIMULATOR_URI
+        config.provided.w3.SIMULATOR_URI
     )
 
 
@@ -65,6 +86,18 @@ class Services(containers.DeclarativeContainer):
         AuthenticationService,
         app=core.app,
         redis_client=gateways.redis_client_auth
+    )
+
+    smart_contracts_factory: Callable = providers.Singleton(
+        lambda w3, native_src: (
+            lambda contract, address=None: w3.eth.contract(
+                address=address,
+                abi=native_src[contract]['abi'],
+                bytecode=native_src[contract]['bin'],
+            )
+        ),
+        gateways.w3,
+        core.smart_contracts_native_src_register
     )
 
 

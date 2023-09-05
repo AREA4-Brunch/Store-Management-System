@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 from flask_app_extended.config import (
     CustomConfigBase,
@@ -22,6 +23,24 @@ REDIS_BLOCKLIST_DB = int(os.environ.get('REDIS_BLOCKLIST_DB', 0))
 PATH_LOGGING_DIR = os.environ.get('PATH_LOGGING_DIR', './logs/')
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
 WEB3_SIMULATOR_URI = os.environ.get('WEB3_SIMULATOR_URI', 'http://0.0.0.0:8545')
+
+# set the path to solidity compiled src, if none provided rely on
+# relative libs/compiled_solidity folder unless this code is
+# running as exe, then raise an exception
+COMPILED_SOLIDTY_SRC_DIR_PATH = os.environ.get(
+    'COMPILED_SOLIDTY_SRC_DIR_PATH', None
+)
+if COMPILED_SOLIDTY_SRC_DIR_PATH is None:  # try default relative path
+    if hasattr(sys, 'frozen'):
+        msg = 'When ran from executable env var `COMPILED_SOLIDTY_SRC_DIR_PATH` must be provided.'
+        raise Exception(msg)
+
+    # default to ./libs/compiled_solidity
+    COMPILED_SOLIDTY_SRC_DIR_PATH = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        'libs',
+        'compiled_solidity'
+    )
 
 
 
@@ -70,6 +89,11 @@ class RedisGatewaysConfiguration(CustomConfigDecoratorBase):
     auth = RedisAuthorizationConfig()
 
 
+class SmartContractsConfig(CustomConfigBase):
+    NATIVE_SRC_DIR_PATH = COMPILED_SOLIDTY_SRC_DIR_PATH
+
+
+
 
 # ========================================================
 # App Configuration:
@@ -86,13 +110,15 @@ class CoreConfiguration(CustomConfigDecoratorBase):
         DefaultURLBlueprintsConfig,
     ]).create_config()
 
+    smart_contracts = SmartContractsConfig()
+
 
 class GatewaysConfiguration(CustomConfigDecoratorBase):
     redis = DefaultConfigFactory(CustomConfigBase(), [
         RedisGatewaysConfiguration,
     ]).create_config()
 
-    web3 = Web3Configuration()
+    w3 = Web3Configuration()
 
 
 class AppConfiguration(CustomConfigBase):

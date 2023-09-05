@@ -1,0 +1,72 @@
+version: '3.8'
+
+
+
+networks:
+  docker_compose_for_development_usr-mng-sys-net:
+    external: true
+  docker_compose_for_development_store-mng-sys-net:
+    external: true
+
+
+services:
+
+
+  # =====================================================================================
+  # USER MANAGEMENT SYSTEM
+  # =====================================================================================
+
+
+  restart-db-user-management:
+    build:
+      context: ../../development/user_management_system/management/db_management_service
+      dockerfile: ./restart_db.dockerfile
+    ports:
+      - 5004:5000
+    # depends_on:
+    #   db-user-management:
+    #     condition: service_healthy
+    environment:
+      # - DB_USER_MANAGEMENT_URI=*usr_mng_db_env
+      - DB_USER_MANAGEMENT_URI=mysql+pymysql://root:etf@db-user-management:3306/authentication
+      - PATH_LOGGING_DIR=./logs/
+      - LOGGING_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./logs/user_management_system/db_management_service
+        target: /usr/service/logs/
+      # - type: bind
+      #   source: ./databases/user_management/migrations
+      #   target: /usr/service/migrations/
+    networks:
+      - docker_compose_for_development_usr-mng-sys-net
+
+
+  # =====================================================================================
+  # STORE MANAGEMENT SYSTEM
+  # =====================================================================================
+
+
+  restart-db-store-management:
+    build:
+      context: ../../development/store_management_system/management/db_management_service
+      dockerfile: ./restart_db.dockerfile
+    ports:
+      - 5005:5000
+    # depends_on:
+    #   db-store-management:
+    #     condition: service_healthy
+    environment:
+      # - DB_STORE_MANAGEMENT_URI=*store_mng_db_env
+      - DB_STORE_MANAGEMENT_URI=mysql+pymysql://root:etf@db-store-management:3306/store_management
+      - PATH_LOGGING_DIR=./logs/
+      - LOGGING_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./logs/store_management_system/db_management_service
+        target: /usr/service/logs/
+      # - type: bind
+      #   source: ./databases/store_management/migrations
+      #   target: /usr/service/migrations/
+    networks:
+      - docker_compose_for_development_store-mng-sys-net

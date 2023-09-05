@@ -1,5 +1,5 @@
 import gc
-import web3 as mweb3  # module web3
+import web3
 from typing import Any
 from flask import (
     request as flask_request,
@@ -27,9 +27,9 @@ def order_products():
     logged_in_user_identifier: str \
         = AuthenticationService.get_user_identifier_from_jwt_header()
     logger = current_app.logger
-    web3: mweb3.Web3 = current_app.container.gateways.web3()
+    w3: web3.Web3 = current_app.container.gateways.w3()
     # pretend the first account is always the owners
-    owner_address = web3.eth.accounts[0]
+    owner_address = w3.eth.accounts[0]
 
     class FieldMissingError(Exception):
         pass
@@ -42,7 +42,6 @@ def order_products():
 
     def fetch_fields():
         form_fields = dict({
-            # 'requests': flask_request.json.get('requests', None),
             'requests': req_get_typechecked('json', list, 'requests', None),
         })
 
@@ -229,33 +228,25 @@ def order_products():
             return customer_address
 
         def validate_customer_address(customer_address):
-            if not web3.is_address(customer_address):
+            if not w3.is_address(customer_address):
                 raise InvalidCustomerAddress('Invalid address.')
 
         customer_address = get_customer_address()
         validate_customer_address(customer_address)
 
-        def get_native_src(file_path):
-            with open(file_path, 'r') as in_file:
-                return in_file.read()
-
-        payment = web3.eth.contract(
-            abi=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.abi'),
-            bytecode=get_native_src('./libs/compiled_solidity/OrderPayment-0.4.0.bin'),
-        )
+        payment = current_app.container.services.smart_contracts_factory()('OrderPayment')
 
         try:
             # deploy contract to blockchanin, pay
             # gas for contructor call
             contract_hash = payment.constructor(
                 customer_address,
-                int(round(order.total_price)),  # round half up
+                round(order.total_price),  # round half up
             ).transact({
                 'from': owner_address,
-                # 'gas': 200000,  # gas limit
             })
 
-            receipt = web3.eth.wait_for_transaction_receipt(
+            receipt = w3.eth.wait_for_transaction_receipt(
                 contract_hash
             )
 
@@ -265,7 +256,7 @@ def order_products():
         # except ValueError as e:
         #     raise e
 
-        # except mweb3.exceptions.ContractLogicError as e:
+        # except web3.exceptions.ContractLogicError as e:
             # raise e
 
         except Exception as e:

@@ -2,17 +2,17 @@ version: '3.8'
 
 
 networks:
-  deployment_store-mng-sys-net:
+  docker_compose_for_development_store-mng-sys-net:
     external: true
-  deployment_shared-blocklist-net:
+  docker_compose_for_development_shared-blocklist-net:
     external: true
-  deployment_ethereum-payment-net:
+  docker_compose_for_development_ethereum-payment-net:
     external: true
 
 services:
   couriers-service:
     build:
-      context: ../development/store_management_system/couriers_service
+      context: ../../development/store_management_system/couriers_service
       dockerfile: ./Dockerfile
     ports:
       - 5003:5000
@@ -35,6 +35,6 @@ services:
         source: ./logs/store_management_system/couriers_service
         target: /usr/service/logs/
     networks:
-      - deployment_store-mng-sys-net
-      - deployment_shared-blocklist-net
-      - deployment_ethereum-payment-net
+      - docker_compose_for_development_store-mng-sys-net
+      - docker_compose_for_development_shared-blocklist-net
+      - docker_compose_for_development_ethereum-payment-net

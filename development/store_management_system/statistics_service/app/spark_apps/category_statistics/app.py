@@ -27,7 +27,7 @@ class CategoryStatisticsApp:
     def _set_path_spark_app_file(self, path_spark_app_file=None):
         # path_spark_app_file==None => this module as .py file to run,
         # but in case of .exe this module is not a .py file
-        if path_spark_app_file is None and getattr(sys, 'frozen', False):
+        if path_spark_app_file is None and hasattr(sys, 'frozen'):
             msg = 'When ran from executable arg `path_spark_app_file` must be provided.'
             raise Exception(msg)
 
