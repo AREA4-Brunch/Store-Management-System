@@ -6,7 +6,7 @@
 # **/__secrets.py
 
 # mysql databases stored data
-!/deployment/databases/user_management/data/.gitkeep
 /deployment/databases/user_management/data
-!/deployment/databases/store_management/data/.gitkeep
+!/deployment/databases/user_management/data/.gitkeep
 /deployment/databases/store_management/data
+!/deployment/databases/store_management/data/.gitkeep

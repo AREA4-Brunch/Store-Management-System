@@ -287,14 +287,8 @@ services:
   #     - LOGGING_LEVEL=DEBUG
   #   volumes:
   #     - type: bind
-  #       source: ./logs/store_management_system/statistics_service/log1.log
-  #       target: /app/logs/log1.log
-  #     - type: bind
-  #       source: ./logs/store_management_system/statistics_service/product_statistics.log
-  #       target: /app/logs/product_statistics.log
-  #     - type: bind
-  #       source: ./logs/store_management_system/statistics_service/category_statistics.log
-  #       target: /app/logs/category_statistics.log
+  #       source: ./logs/store_management_system/statistics_service/
+  #       target: /app/logs/
   #   # healthcheck:
   #   #   test: ["CMD", "telnet", "localhost", "5000"]
   #   #   interval: 5s
