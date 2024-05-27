@@ -5,7 +5,6 @@ from flask import (
     current_app,
     jsonify
 )
-from flask_sqlalchemy import SQLAlchemy
 from std_authentication.decorators import roles_required_login
 from project_common.utils.request import (
     flask_request_get_typechecked as req_get_typechecked
@@ -21,7 +20,6 @@ from ...models import Order
     roles_response_func=lambda _: (jsonify({ 'msg': 'Missing Authorization Header' }), 401)
 )
 def pay_order():
-    db: SQLAlchemy = current_app.container.services.db_store_management()
     logger = current_app.logger
     w3: web3.Web3 = current_app.container.gateways.w3()
 
@@ -85,7 +83,7 @@ def pay_order():
             ).hex()
 
         except Exception as e:
-            logger.exception(f'HEY I GOT : {e}')
+            # logger.exception(f'HEY I GOT : {e}')
             raise ValidationError('Invalid credentials.')
 
         return customer_address, private_key
@@ -111,7 +109,7 @@ def pay_order():
                     })
             )
             transaction = w3.eth.account.sign_transaction(transaction, private_key)
-            transaction_hash = w3.eth.send_raw_transaction(transaction.rawTransaction)
+            transaction_hash = w3.eth.send_raw_transaction(transaction.raw_transaction)
             receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
 
         except ValueError as e:

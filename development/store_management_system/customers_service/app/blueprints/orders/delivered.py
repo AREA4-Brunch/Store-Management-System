@@ -104,7 +104,7 @@ def mark_order_completed():
                     })
             )
             transaction = w3.eth.account.sign_transaction(transaction, private_key)
-            transaction_hash = w3.eth.send_raw_transaction(transaction.rawTransaction)
+            transaction_hash = w3.eth.send_raw_transaction(transaction.raw_transaction)
             receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
 
         except web3.exceptions.ContractLogicError as e:
